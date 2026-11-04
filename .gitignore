@@ -1,0 +1,10 @@
+# Segredos: NUNCA vão para o GitHub
+.streamlit/secrets.toml
+
+# Banco local de testes (em produção o banco é o Supabase)
+*.db
+
+# Arquivos gerados pelo Python
+__pycache__/
+*.pyc
+.venv/

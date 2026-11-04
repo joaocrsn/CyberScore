@@ -1,0 +1,5 @@
+streamlit==1.63.0
+pandas==3.0.5
+groq==1.7.0
+sqlalchemy==2.0.57
+psycopg2-binary>=2.9.10,<3
