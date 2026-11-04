@@ -1,0 +1,19 @@
+[browser]
+# LGPD: não enviar estatísticas de uso do navegador para o Streamlit
+gatherUsageStats = false
+
+[server]
+# Proteções padrão do Streamlit, explícitas para não serem desligadas por engano
+enableXsrfProtection = true
+enableCORS = true
+
+[client]
+toolbarMode = "viewer"
+showErrorDetails = "none"
+
+[theme]
+base = "dark"
+backgroundColor = "#09090B"
+secondaryBackgroundColor = "#131316"
+textColor = "#ECECF1"
+primaryColor = "#8B5CF6"
