@@ -4,8 +4,10 @@ Regras de isolamento, garantidas aqui e não na tela:
 - A tela nunca monta SQL nem acessa o banco direto: só chama os métodos desta classe.
 - O código de acesso do usuário nunca é gravado: só um HMAC-SHA256 dele (com "pimenta" secreta).
 - Todo dado pessoal só é lido ou apagado mediante o código, sempre filtrando pelo hash dele.
-- O painel de pesquisa só recebe médias de quem consentiu, sem respostas individuais nem hashes,
-  e esconde grupos com menos de TAMANHO_MINIMO_GRUPO pessoas (evita identificar alguém por setor/área).
+- Todo diagnóstico é gravado para estatísticas, mas sem identificação: só quem escolhe o histórico
+  tem o hash do código ligado aos resultados.
+- O painel de pesquisa só recebe médias, sem respostas individuais nem hashes, e esconde grupos
+  com menos de TAMANHO_MINIMO_GRUPO pessoas (evita identificar alguém por setor/área).
 
 Funciona com SQLite (no seu PC) e com Postgres (Supabase, em produção): basta trocar a URL.
 """
@@ -30,7 +32,7 @@ avaliacoes = Table(
     "avaliacoes", metadados,
     Column("id", Integer, primary_key=True, autoincrement=True),
     Column("usuario_hash", String(64), index=True),  # vazio = resultado anônimo, só para pesquisa
-    Column("pesquisa", Boolean, nullable=False, default=False),  # consentiu com uso na pesquisa?
+    Column("pesquisa", Boolean, nullable=False, default=True),  # entra nas estatísticas (hoje, sempre)
     Column("setor", String(40)),  # opcional
     Column("area", String(60)),  # opcional
     Column("score", Integer, nullable=False),
@@ -69,14 +71,12 @@ class Repositorio:
 
     # ---------- Escrita ----------
 
-    def salvar(self, codigo, pesquisa, setor, area, score, versao, respostas):
-        """Grava o resultado só se houver motivo: histórico (código) ou pesquisa (consentimento)."""
-        if not codigo and not pesquisa:
-            return None
+    def salvar(self, codigo, setor, area, score, versao, respostas):
+        """Grava todo resultado para as estatísticas anônimas; com código, ele também entra no histórico."""
         with self._engine.begin() as conexao:
             resultado = conexao.execute(insert(avaliacoes).values(
                 usuario_hash=self._hash(codigo) if codigo else None,
-                pesquisa=bool(pesquisa), setor=setor, area=area, score=score, versao=versao,
+                pesquisa=True, setor=setor, area=area, score=score, versao=versao,
                 respostas=json.dumps(respostas, ensure_ascii=False),
                 criado_em=datetime.now(timezone.utc),
             ))
@@ -115,7 +115,7 @@ class Repositorio:
         with self._engine.begin() as conexao:
             return conexao.execute(delete(avaliacoes).where(avaliacoes.c.usuario_hash == self._hash(codigo))).rowcount
 
-    # ---------- Pesquisa (só agregados, só de quem consentiu) ----------
+    # ---------- Pesquisa (só agregados, nunca linhas individuais) ----------
 
     def estatisticas_pesquisa(self, versao):
         base = (avaliacoes.c.pesquisa.is_(True), avaliacoes.c.versao == versao)

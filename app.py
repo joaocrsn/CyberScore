@@ -9,7 +9,6 @@ from pathlib import Path
 
 import pandas as pd
 import streamlit as st
-import streamlit.components.v1 as components
 from groq import Groq
 
 import legal
@@ -417,14 +416,15 @@ def titulo_secao(texto):
 
 
 @st.cache_resource
-def obter_repositorio():
+def obter_repositorio(versao_modulo):
+    # versao_modulo muda quando repositorio.py é atualizado: evita reaproveitar a classe antiga da memória.
     # Local: SQLite na pasta do projeto. Produção: DATABASE_URL do Supabase (Postgres) no secrets.
     url = segredo("DATABASE_URL", f"sqlite:///{CAMINHO_BANCO.as_posix()}")
     return Repositorio(url, segredo("PIMENTA_CODIGO"))
 
 
 try:
-    repo = obter_repositorio()
+    repo = obter_repositorio(id(Repositorio))
 except Exception as erro:
     print(f"[banco] falha ao conectar: {erro}")  # detalhes só no log do servidor, nunca na tela
     st.error("O serviço está temporariamente indisponível. Tente novamente em alguns minutos.")
@@ -805,7 +805,7 @@ VALORES_INICIAIS = {
     "etapa_diagnostico": 0, "diagnostico_finalizado": False,
     "respostas_diagnostico": [], "ordem_opcoes": [], "resultado_salvo": False,
     "analise_ia_realizada": False, "dicas_diagnostico_ia": "",
-    "consentiu_pesquisa": False, "guardar_historico": False, "codigo_recem_criado": False,
+    "guardar_historico": False, "codigo_recem_criado": False,
 }
 
 # Valem para a visita inteira: não são zerados ao fazer uma nova auditoria
@@ -1031,11 +1031,14 @@ def pagina_diagnostico():
             ["Só ver o resultado agora, sem guardar", opcao_historico],
             index=1 if codigo_atual else 0,
         ) == opcao_historico
-        pesquisa = st.checkbox(
-            "Autorizo o uso anônimo das minhas respostas na pesquisa acadêmica do projeto (opcional)",
-            help="Entram só em médias do painel, sem nada que identifique você. Você pode recusar e usar o app normalmente.",
+        st.caption(
+            "📊 Todas as respostas são guardadas **de forma anônima** (sem nome, e-mail ou código) para estatísticas "
+            "e para a pesquisa acadêmica do projeto. Só quem escolhe o histórico consegue rever os próprios resultados."
         )
-        aceite = st.checkbox("Li a Política de Privacidade e os Termos de Uso e tenho 18 anos ou mais.")
+        aceite = st.checkbox(
+            "Li a Política de Privacidade e os Termos de Uso, estou ciente de que minhas respostas são guardadas "
+            "de forma anônima e tenho 18 anos ou mais."
+        )
         with st.expander("Ler o resumo da Política de Privacidade"):
             st.markdown(legal.RESUMO_PRIVACIDADE)
             st.caption("O texto completo está em **Privacidade e Termos**, no menu lateral.")
@@ -1045,7 +1048,6 @@ def pagina_diagnostico():
             st.session_state.setor_usuario = setor or ""
             st.session_state.area_usuario = area or ""
             st.session_state.guardar_historico = guardar
-            st.session_state.consentiu_pesquisa = pesquisa
             if guardar and not codigo_atual:
                 st.session_state.codigo_usuario = gerar_codigo()
                 st.session_state.codigo_recem_criado = True
@@ -1063,7 +1065,7 @@ def pagina_diagnostico():
         if not st.session_state.resultado_salvo:
             try:
                 repo.salvar(
-                    codigo, st.session_state.consentiu_pesquisa, st.session_state.setor_usuario or None,
+                    codigo, st.session_state.setor_usuario or None,
                     st.session_state.area_usuario or None, score_1000, VERSAO_QUESTIONARIO, respostas,
                 )
                 st.session_state.resultado_salvo = True
@@ -1081,8 +1083,10 @@ def pagina_diagnostico():
             exibir_codigo_novo(codigo)
         painel_score(score_1000, classificacao, mensagem, cor_hex)
         if st.session_state.resultado_salvo:
-            destinos = [d for d, ok in (("no seu histórico", codigo), ("de forma anônima na pesquisa", st.session_state.consentiu_pesquisa)) if ok]
-            st.caption("Resultado guardado " + " e ".join(destinos) + "." if destinos else "Nada foi guardado: este resultado existe só nesta tela.")
+            st.caption(
+                "Resultado guardado no seu histórico e, de forma anônima, nas estatísticas." if codigo
+                else "Resultado guardado de forma anônima nas estatísticas. Ele não fica no seu histórico."
+            )
 
         titulo_secao("Desempenho por área")
         painel_blocos(respostas)
@@ -1309,7 +1313,6 @@ def pagina_historico():
             detalhes = [d for d in (h["setor"], h["area"]) if d]
             if detalhes:
                 st.caption("Perfil informado: " + " · ".join(detalhes))
-            st.caption("Usada na pesquisa anônima: " + ("sim" if h["pesquisa"] else "não"))
             if h["versao"] == VERSAO_QUESTIONARIO:
                 for bloco, proporcao in score_por_bloco(h["respostas"]).items():
                     st.markdown(f"- {bloco}: **{proporcao * 100:.0f}%**")
@@ -1322,7 +1325,7 @@ def pagina_historico():
 
     st.divider()
     with st.expander("Apagar todo o meu histórico"):
-        st.warning("Apaga todas as suas avaliações, inclusive as que foram usadas na pesquisa. Não dá para desfazer.")
+        st.warning("Apaga todas as suas avaliações, inclusive das estatísticas da pesquisa. Não dá para desfazer.")
         confirmado = st.checkbox("Entendo e quero apagar tudo", key="confirma_apagar_historico")
         if st.button("Apagar meu histórico", disabled=not confirmado):
             repo.apagar_historico(codigo)
@@ -1354,7 +1357,7 @@ def grafico_medias(grupos, rotulo, cor):
 def pagina_dashboard():
     cabecalho_pagina(
         "Painel da Pesquisa",
-        "Médias dos CyberScores de quem autorizou o uso anônimo das respostas. "
+        "Médias anônimas de todos os diagnósticos realizados. "
         f"Grupos com menos de {TAMANHO_MINIMO_GRUPO} pessoas ficam ocultos para ninguém ser identificado.",
     )
     try:
@@ -1432,7 +1435,7 @@ st.sidebar.caption(
 )
 
 # O Streamlit marca a página como inglês; leitores de tela precisam saber que é português
-components.html("<script>window.parent.document.documentElement.lang = 'pt-BR';</script>", height=0)
+st.iframe("<script>window.parent.document.documentElement.lang = 'pt-BR';</script>", height=1)
 
 if not st.session_state.aviso_cookies_ok:
     with st.container(border=True):

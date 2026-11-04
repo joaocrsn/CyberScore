@@ -17,8 +17,9 @@ AVISO_COOKIES = (
 
 RESUMO_PRIVACIDADE = f"""
 - **Não pedimos** nome, e-mail, CPF nem telefone.
-- Suas respostas só ficam guardadas se você escolher **guardar no histórico** (com um código anônimo)
-  e/ou **autorizar o uso na pesquisa**. Caso contrário, nada é salvo.
+- **Todas as respostas são guardadas de forma anônima** para estatísticas e para a pesquisa acadêmica
+  do projeto, sem nada que identifique você.
+- Se você escolher **guardar no histórico**, recebe um código anônimo para rever os próprios resultados.
 - O código de acesso não é armazenado: guardamos apenas uma versão embaralhada (hash) dele.
 - Você pode ver e apagar seu histórico a qualquer momento em **Meu Histórico**.
 - Os relatos da **Consultoria** são enviados a um serviço de IA externo (Groq, nos EUA) e não são guardados por nós.
@@ -38,10 +39,9 @@ Coletamos **apenas o necessário** para cada funcionalidade:
 
 | Funcionalidade | Dados | Quando |
 |---|---|---|
-| Diagnóstico de Risco | Respostas às perguntas e o score calculado | Sempre, mas só ficam na tela, a não ser que você escolha guardá-los |
+| Diagnóstico de Risco e estatísticas | Respostas às perguntas, score e data, **sem nenhum identificador** | Sempre que você conclui um diagnóstico |
 | Perfil (opcional) | Setor de atuação e área | Só se você preencher |
-| Meu Histórico (opcional) | Resultados, data e um **hash** do seu código de acesso | Só se você escolher guardar no histórico |
-| Pesquisa acadêmica (opcional) | Respostas, score, setor e área, sem nenhum identificador | Só se você autorizar |
+| Meu Histórico (opcional) | Os mesmos resultados, ligados a um **hash** do seu código de acesso | Só se você escolher guardar no histórico |
 | Consultoria de Incidentes | O texto que você digitar | Enviado à IA no momento da análise; **não é guardado por nós** |
 
 **Não coletamos** nome, e-mail, CPF, telefone, endereço, localização nem dados sensíveis
@@ -54,8 +54,11 @@ se você perder o código, não conseguimos recuperá-lo.
 ### 3. Para que usamos e com qual base legal
 - **Guardar e mostrar seu histórico**: com base no seu **consentimento** (art. 7º, I, da LGPD),
   dado ao escolher "Guardar no meu histórico".
-- **Pesquisa acadêmica**: com base no seu **consentimento** (art. 7º, I), dado ao marcar a autorização.
-  Os resultados aparecem apenas em médias, e grupos com menos de 3 pessoas ficam ocultos.
+- **Estatísticas e pesquisa acadêmica**: os resultados sem histórico são guardados **sem nenhum
+  identificador** (não pedimos nome, e-mail, CPF ou telefone, e eles não são ligados a código nenhum),
+  o que os torna dados anonimizados, fora do alcance da LGPD (art. 12). Mesmo assim, você é informado
+  antes de começar. Os resultados aparecem apenas em médias, e grupos com menos de 3 pessoas ficam ocultos.
+  Se você também guardar no histórico, esse uso estatístico ocorre com base no seu consentimento (art. 7º, I).
 - **Análise da Consultoria por IA**: com base no seu **consentimento**, dado ao clicar em "Analisar Ameaça"
   depois de ler o aviso exibido na página.
 
@@ -90,8 +93,10 @@ e **revogar o consentimento**.
 - **Ver e apagar** seu histórico: diretamente em **Meu Histórico**, com o seu código.
 - **Outros pedidos**: escreva para **{EMAIL_CONTATO}**. Respondemos em até 15 dias.
 
-Resultados enviados **apenas para a pesquisa, sem código**, são anônimos desde a origem: como não há
-como saber de quem são, não é possível localizá-los para exclusão individual.
+Resultados guardados **sem código** são anônimos desde a origem: como não há como saber de quem são,
+não é possível localizá-los para exclusão individual. Se quiser poder apagar seus resultados depois,
+escolha **guardar no histórico** antes de começar. Ao apagar o histórico, os resultados saem também
+das estatísticas.
 
 Você também pode apresentar reclamação à **Autoridade Nacional de Proteção de Dados (ANPD)**.
 

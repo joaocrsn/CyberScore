@@ -7,12 +7,12 @@ Legenda de gravidade: 🔴 alta · 🟠 média · 🟡 baixa
 
 | # | Risco | Gravidade | O que já foi feito | O que ainda depende de você |
 |---|---|---|---|---|
-| 1 | **Pesquisa com seres humanos sem aprovação ética.** Coletar respostas de pessoas para análise acadêmica pode exigir submissão ao Comitê de Ética em Pesquisa (CEP/Plataforma Brasil), conforme a Resolução CNS nº 510/2016. | 🔴 | Consentimento separado e opcional para a pesquisa; dados anônimos; só médias no painel. | **Perguntar ao orientador** se o projeto precisa passar pelo CEP antes de divulgar o link para coleta real. Até lá, use só para demonstração. |
+| 1 | **Pesquisa com seres humanos sem aprovação ética.** Coletar respostas de pessoas para análise acadêmica pode exigir submissão ao Comitê de Ética em Pesquisa (CEP/Plataforma Brasil), conforme a Resolução CNS nº 510/2016. | 🔴 | Todas as respostas são guardadas de forma anônima, com aviso claro e aceite antes de começar; só médias no painel. | **Perguntar ao orientador** se o projeto precisa passar pelo CEP e se o aviso atual basta como Termo de Consentimento (TCLE), antes de divulgar o link para coleta real. Até lá, use só para demonstração. |
 | 2 | **Usuário digitar dados pessoais (dele ou de terceiros) na Consultoria**, que são enviados à IA nos EUA. | 🔴 | Aviso destacado antes do campo; bloqueio automático de CPF, cartão, e-mail e telefone; o relato não é gravado no banco. | Nada obrigatório. O filtro não pega nomes ou endereços: o aviso continua essencial. |
 | 3 | **Transferência internacional de dados** (Groq, Streamlit/Snowflake e Supabase nos EUA; Google Fonts). | 🟠 | Informada na política com base no consentimento específico (art. 33, VIII); banco recomendado na região São Paulo. | Escolher **São Paulo** ao criar o Supabase. Opcional: hospedar as fontes no próprio app para eliminar o Google Fonts. |
 | 4 | **Controlador pessoa física.** Como estudante, você responde pessoalmente pelo tratamento dos dados. | 🟠 | Política identifica o controlador e o caráter acadêmico, sem fins lucrativos. | Preencher um **e-mail de contato real** em `legal.py` e responder pedidos em até 15 dias. Agentes de pequeno porte podem dispensar o encarregado (Resolução CD/ANPD nº 2/2022), mas o canal de contato é obrigatório. |
 | 5 | **Dados pseudonimizados continuam sendo dados pessoais.** O hash do código liga várias avaliações à mesma pessoa. | 🟠 | Código nunca é gravado (HMAC com chave secreta); nenhum dado de contato é pedido; histórico só é criado por escolha do usuário. | Guardar a `PIMENTA_CODIGO` em segredo e nunca publicá-la. |
-| 6 | **Reidentificação por setor + área em amostras pequenas.** | 🟠 | Setor e área são opcionais; o painel esconde grupos com menos de 3 pessoas e não mostra respostas individuais. | Não exportar nem publicar respostas individuais no artigo; usar só agregados. |
+| 6 | **Anonimização contestável.** Todo diagnóstico é guardado sem identificador e tratado como dado anônimo (art. 12), mas setor + área + data/hora, em amostras pequenas, podem permitir reconhecer alguém. Se isso acontecer, o dado volta a ser pessoal e exigiria uma base legal. | 🟠 | Nenhum dado de contato é pedido; setor e área são opcionais; aviso e aceite antes de começar; o painel esconde grupos com menos de 3 pessoas e não mostra respostas individuais. | Não exportar nem publicar respostas individuais no artigo; usar só agregados. Ao analisar no Supabase, não cruzar com informações externas sobre quem respondeu. |
 | 7 | **Acesso administrativo aos dados brutos** (senha de admin, painel do Supabase). | 🟠 | Área admin só apaga dados (não exibe); comparação de senha resistente a ataques de tempo; sem senha configurada, a área fica desativada. | Usar senhas fortes e únicas no Supabase, GitHub e `SENHA_ADMIN`, com verificação em duas etapas nessas contas. |
 | 8 | **Retenção além do necessário.** | 🟡 | Política define prazo: até o usuário apagar ou até o fim do projeto. | **Apagar o banco** (ou o projeto no Supabase) na data de `FIM_DO_PROJETO`. Coloque um lembrete na agenda. |
 | 9 | **Menores de idade** usando o app. | 🟡 | Termos e aceite exigem 18 anos ou mais; não há coleta de dados de identificação. | Nada obrigatório: não há verificação de idade (autodeclaração). |
@@ -24,7 +24,8 @@ Legenda de gravidade: 🔴 alta · 🟠 média · 🟡 baixa
 
 ## O que mudou no app por causa da LGPD
 
-- Nada é gravado sem motivo: só com **histórico** (escolha do usuário) e/ou **pesquisa** (consentimento separado).
+- Todo diagnóstico é gravado **de forma anônima** para estatísticas, com aviso claro antes de começar;
+  só o **histórico** (opcional) liga resultados a um código.
 - Setor e área viraram **opcionais**; nenhum dado de identificação é pedido.
 - Aceite obrigatório da Política de Privacidade e dos Termos, com declaração de 18+.
 - Página **Privacidade e Termos** com política completa, termos e política de cookies.
