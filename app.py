@@ -426,7 +426,8 @@ def obter_repositorio():
 try:
     repo = obter_repositorio()
 except Exception as erro:
-    st.error(f"Não foi possível conectar ao banco de dados: {erro}")
+    print(f"[banco] falha ao conectar: {erro}")  # detalhes só no log do servidor, nunca na tela
+    st.error("O serviço está temporariamente indisponível. Tente novamente em alguns minutos.")
     st.stop()
 
 
