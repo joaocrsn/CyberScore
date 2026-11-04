@@ -1011,7 +1011,7 @@ def exibir_codigo_novo(codigo):
 def pagina_diagnostico():
     if not st.session_state.perfil_concluido:
         cabecalho_pagina(
-            "Antes de começar",
+            "Diagnóstico de Segurança Digital",
             f"São {len(PERGUNTAS)} situações do dia a dia, cerca de 4 minutos. "
             "Responda o que você realmente faz, não o que acha que é o certo.",
         )
