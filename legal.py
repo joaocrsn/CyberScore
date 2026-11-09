@@ -7,12 +7,16 @@ a revisão por um profissional de Direito.
 
 CONTROLADOR = "João Victor Bezerra Cursino"
 EMAIL_CONTATO = "joao.cursino@undf.edu.br"
-DATA_ATUALIZACAO = "04/11/2026"
+DATA_ATUALIZACAO = "09/11/2026"
 FIM_DO_PROJETO = "31/12/2027"
 
 AVISO_COOKIES = (
     "🍪 **Cookies:** este site usa apenas cookies técnicos, necessários para ele funcionar com segurança. "
-    "Não usamos cookies de publicidade nem de rastreamento. Detalhes em **Privacidade e Termos**."
+    "Não usamos cookies de publicidade nem de rastreamento. Detalhes na Política de Cookies."
+)
+AVISO_COOKIES_HTML = (
+    '<span aria-hidden="true">🍪</span><span><b>Cookies:</b> este site usa apenas cookies técnicos, '
+    "necessários para ele funcionar com segurança. Não usamos cookies de publicidade nem de rastreamento.</span>"
 )
 
 RESUMO_PRIVACIDADE = f"""
@@ -23,13 +27,13 @@ RESUMO_PRIVACIDADE = f"""
 - O código de acesso não é armazenado: guardamos apenas uma versão embaralhada (hash) dele.
 - Você pode ver e apagar seu histórico a qualquer momento em **Meu Histórico**.
 - Os relatos da **Consultoria** são enviados a um serviço de IA externo (Groq, nos EUA) e não são guardados por nós.
-- Responsável: {CONTROLADOR}, projeto acadêmico da UDF. Contato: {EMAIL_CONTATO}.
+- Responsável: {CONTROLADOR}, projeto acadêmico da UnDF. Contato: {EMAIL_CONTATO}.
 """
 
 POLITICA_PRIVACIDADE = f"""
 ### 1. Quem é o responsável pelos seus dados
 O CyberScore é um projeto acadêmico, sem fins lucrativos, desenvolvido por **{CONTROLADOR}**,
-estudante do curso de Gestão da Tecnologia da Informação da Universidade do Distrito Federal (UDF),
+estudante do curso de Gestão da Tecnologia da Informação da Universidade do Distrito Federal (UnDF),
 que atua como **controlador** dos dados, nos termos da Lei Geral de Proteção de Dados (Lei nº 13.709/2018, LGPD).
 
 Contato para qualquer assunto sobre seus dados: **{EMAIL_CONTATO}**.
@@ -52,6 +56,10 @@ resumo criptográfico (HMAC-SHA256) que não permite descobrir o código origina
 se você perder o código, não conseguimos recuperá-lo.
 
 ### 3. Para que usamos e com qual base legal
+Antes de usar qualquer parte do site, você lê um resumo desta política na **tela de acesso** e
+declara que aceita estes termos e que tem 18 anos ou mais. Você pode reler os textos completos a qualquer
+momento pelo botão **Privacidade e Termos**, no menu lateral.
+
 - **Guardar e mostrar seu histórico**: com base no seu **consentimento** (art. 7º, I, da LGPD),
   dado ao escolher "Guardar no meu histórico".
 - **Estatísticas e pesquisa acadêmica**: os resultados sem histórico são guardados **sem nenhum
@@ -103,7 +111,7 @@ Você também pode apresentar reclamação à **Autoridade Nacional de Proteçã
 ### 7. Segurança
 Adotamos medidas como conexão criptografada (HTTPS), armazenamento do código apenas em forma de hash,
 isolamento por código (cada pessoa só acessa os próprios dados), coleta mínima e exibição apenas de
-médias no painel da pesquisa. Nenhum sistema é 100% seguro; em caso de incidente que possa trazer
+médias no painel de administração, restrito por senha. Nenhum sistema é 100% seguro; em caso de incidente que possa trazer
 risco relevante, comunicaremos os usuários e a ANPD, conforme o art. 48 da LGPD.
 
 ### 8. Crianças e adolescentes
@@ -115,7 +123,7 @@ Podemos atualizar esta política. A data da última atualização fica sempre no
 
 TERMOS_USO = f"""
 ### 1. Sobre o serviço
-O CyberScore é uma ferramenta **educativa e gratuita**, parte de um projeto acadêmico da UDF,
+O CyberScore é uma ferramenta **educativa e gratuita**, parte de um projeto acadêmico da UnDF,
 que ajuda você a identificar hábitos digitais de risco e a reagir a incidentes de segurança.
 Ao usar o site, você concorda com estes termos.
 

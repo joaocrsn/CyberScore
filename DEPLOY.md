@@ -68,12 +68,13 @@ As tabelas são criadas sozinhas na primeira vez que o app abrir.
 
 ## 4. Conferir depois de publicar
 
-- [ ] O aviso de cookies aparece e some ao clicar em **Entendi**.
+- [ ] A **tela de acesso** aparece primeiro, sem menu, e só libera o site depois das duas caixas marcadas.
 - [ ] Diagnóstico com **Guardar no histórico** mostra o código; **Meu Histórico** abre com ele.
 - [ ] Em outra aba anônima, um código inventado **não** abre histórico nenhum.
 - [ ] **Consultoria** responde com a IA; um relato com CPF é bloqueado.
-- [ ] **Painel da Pesquisa** mostra só médias (grupos com menos de 3 pessoas ficam ocultos).
-- [ ] **Privacidade e Termos** mostra o seu e-mail de contato (e não o texto entre colchetes).
+- [ ] O endereço do site com `?admin` no final abre o **Painel de Administração**, que pede a senha
+      e mostra só médias (grupos com menos de 3 pessoas ficam ocultos).
+- [ ] O botão **Privacidade e Termos** do menu mostra o seu e-mail de contato.
 - [ ] No navegador: F12 → *Application* → *Cookies*: anote os cookies que aparecem e confira se batem
       com a aba **Cookies** da política (a plataforma pode adicionar algum próprio).
 

@@ -1,7 +1,7 @@
 # CyberScore: riscos jurídicos e de privacidade
 
 Levantamento feito em 04/11/2026 para o projeto acadêmico. **Não é parecer jurídico**: revise com o orientador
-e, se possível, com alguém da área de Direito da UDF antes de abrir o app ao público.
+e, se possível, com alguém da área de Direito da UnDF antes de abrir o app ao público.
 
 Legenda de gravidade: 🔴 alta · 🟠 média · 🟡 baixa
 
@@ -28,7 +28,10 @@ Legenda de gravidade: 🔴 alta · 🟠 média · 🟡 baixa
   só o **histórico** (opcional) liga resultados a um código.
 - Setor e área viraram **opcionais**; nenhum dado de identificação é pedido.
 - Aceite obrigatório da Política de Privacidade e dos Termos, com declaração de 18+.
-- Página **Privacidade e Termos** com política completa, termos e política de cookies.
+- **Tela de acesso**: ninguém usa o site antes de ler o resumo da política e aceitar os termos (18+);
+  os textos completos podem ser relidos a qualquer momento pelo botão **Privacidade e Termos** do menu.
+- **Painel de Administração** fora do menu (aberto só com `?admin` no endereço), protegido por senha
+  e com limite de 5 tentativas.
 - Aviso de cookies na primeira visita; estatísticas do Streamlit desativadas.
 - **Meu Histórico**: o titular vê e apaga os próprios dados sem precisar pedir a ninguém (art. 18).
 - Alerta permanente no menu lateral para não digitar dados sensíveis; bloqueio automático na Consultoria.

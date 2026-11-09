@@ -1,4 +1,5 @@
 import hmac
+import importlib
 import os
 import random
 import re
@@ -12,6 +13,9 @@ import streamlit as st
 from groq import Groq
 
 import legal
+# O servidor pode manter na memória uma versão antiga de legal.py depois de um deploy;
+# recarregar garante que os textos (e qualquer nome novo) correspondam ao app.py atual.
+legal = importlib.reload(legal)
 from repositorio import TAMANHO_MINIMO_GRUPO, Repositorio, gerar_codigo, normalizar_codigo
 
 
@@ -21,7 +25,8 @@ from repositorio import TAMANHO_MINIMO_GRUPO, Repositorio, gerar_codigo, normali
 # CONFIGURAÇÕES GERAIS E TEMA VISUAL
 # ============================================================
 
-st.set_page_config(page_title="Central de Segurança", page_icon="🔐", layout="centered")
+# "wide" aproveita a largura do computador; no celular as colunas se empilham sozinhas
+st.set_page_config(page_title="Central de Segurança", page_icon="🔐", layout="wide")
 
 
 ARQUIVO_SEGREDOS = Path(__file__).resolve().parent / ".streamlit" / "secrets.toml"
@@ -128,7 +133,9 @@ st.markdown(
         [data-testid="stCaptionContainer"], .stApp small { color: var(--muted) !important; font-family: var(--font-body); font-size: 13px; line-height: 1.5; }
         [data-testid="stCaptionContainer"] p { color: var(--muted) !important; }
         .stApp [data-testid="stCheckbox"] p, .stApp [data-testid="stRadio"] p { font-size: 15px; line-height: 1.5; }
-        .block-container { padding-top: 3.2rem; max-width: 760px; }
+        .block-container { padding-top: 2.6rem; max-width: 1140px; }
+        /* Telas de leitura contínua (perguntas, consultoria, histórico) ficam numa coluna confortável */
+        .st-key-coluna_leitura { max-width: 860px; margin: 0 auto; width: 100%; }
         hr { border-color: var(--border) !important; }
 
 
@@ -219,7 +226,7 @@ st.markdown(
 
         /* ---------- Cabeçalho de página ---------- */
         .page-title { font-family: var(--font-display); font-weight: 700; font-size: 34px; line-height: 1.12; letter-spacing: -0.025em; color: var(--text); margin: 0 0 8px 0; }
-        .page-sub { color: var(--muted); font-size: 15.5px; line-height: 1.55; margin: 0 0 26px 0; max-width: 560px; }
+        .page-sub { color: var(--muted); font-size: 15.5px; line-height: 1.55; margin: 0 0 26px 0; max-width: 680px; }
 
 
         /* ---------- Botões (cartões de resposta) ---------- */
@@ -241,7 +248,7 @@ st.markdown(
             margin-bottom: 6px;
         }
         div.stButton > button > div, div.stButton > button span { width: 100%; justify-content: flex-start !important; text-align: left !important; }
-        div.stButton > button p { text-align: left !important; color: var(--text); }
+        div.stButton > button p { text-align: left !important; color: var(--text); white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
         div.stButton > button:hover {
             border-color: var(--purple);
             background: linear-gradient(90deg, rgba(139, 92, 246, 0.16), rgba(139, 92, 246, 0.03) 70%), var(--surface);
@@ -349,6 +356,7 @@ st.markdown(
             background: linear-gradient(90deg, rgba(139, 92, 246, 0.28), rgba(139, 92, 246, 0.06)) !important;
             box-shadow: -4px 0 0 var(--purple) !important;
         }
+        [class*="st-key-inc_"] button { min-height: 72px; }
         .protocolo { list-style: none; padding: 0; margin: 4px 0 8px 0; }
         .protocolo li { display: flex; gap: 16px; padding: 14px 0; border-bottom: 1px solid var(--border); }
         .protocolo li:last-child { border-bottom: none; }
@@ -380,7 +388,9 @@ st.markdown(
         .nota { display: flex; gap: 10px; background: rgba(34, 211, 238, 0.07); border: 1px solid rgba(34, 211, 238, 0.35);
             border-radius: 12px; padding: 12px 14px; margin: 4px 0 8px 0; font-size: 14px; line-height: 1.5; color: var(--text); }
         .nota b { color: var(--cyan); }
-        .recursos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 4px 0 18px 0; }
+        .recursos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 4px 0 22px 0; }
+        .acesso-topo { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; flex-wrap: wrap; }
+        .acesso-topo .page-sub { margin-bottom: 22px; }
         .recurso { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
         .recurso-icone { font-size: 22px; line-height: 1; margin-bottom: 8px; }
         .recurso-titulo { font-family: var(--font-display); font-weight: 600; font-size: 16px; margin-bottom: 4px; color: var(--text); }
@@ -951,7 +961,8 @@ def gerar_dicas_diagnostico(score_final, temas_vulneraveis):
         "Você orienta pessoas comuns (sem conhecimento técnico) sobre segurança digital no Brasil. "
         f"A pessoa tirou {score_final} de 1000 num teste. Pontos fracos, do mais grave ao menos grave: {lista_de_erros}. "
         "Escreva um plano de 3 passos para fazer ainda esta semana, começando pelo mais grave. "
-        "Português do Brasil, linguagem simples, tom encorajador, sem jargão técnico, no máximo 2 frases por passo."
+        "Português do Brasil, linguagem simples, tom encorajador, sem jargão técnico, no máximo 2 frases por passo. "
+        "Não cite marcas nem nomes de aplicativos ou produtos, e não escreva links."
     )
     return perguntar_ia(prompt)
 
@@ -980,7 +991,8 @@ def explicar_calculo(respostas=None):
     exemplo = PERGUNTAS[0]
     texto_ex, fator_ex = exemplo["opcoes"][1]
     pesos = [p["peso"] for p in PERGUNTAS]
-    st.markdown(
+    col_texto, col_tabela = st.columns([1.1, 1], gap="medium")
+    col_texto.markdown(
         f"**1. Cada situação vale pontos conforme o risco.** As {len(PERGUNTAS)} situações somam "
         f"**{PONTUACAO_MAXIMA} pontos**. Golpes mais comuns e que causam mais prejuízo valem mais "
         f"(de {min(pesos)} a {max(pesos)} pontos cada).\n\n"
@@ -1004,8 +1016,9 @@ def explicar_calculo(respostas=None):
     total = {"Área": "Total", "Situações": len(PERGUNTAS), "Pontos possíveis": PONTUACAO_MAXIMA}
     if respostas:
         total["Seus pontos"] = sum(obtidos.values())
-    st.dataframe(pd.DataFrame(linhas + [total]), hide_index=True, use_container_width=True)
-    st.markdown(
+    # Tabela HTML simples (em vez de grade interativa): legível por leitores de tela e fácil de imprimir
+    col_tabela.table(pd.DataFrame(linhas + [total]).set_index("Área"))
+    col_tabela.markdown(
         "**Faixas de resultado:** de 0 a 399 = **Risco Crítico** · de 400 a 699 = **Alerta/Atenção** · "
         "de 700 a 1000 = **Postura Segura**."
     )
@@ -1110,18 +1123,18 @@ def pagina_diagnostico():
         )
         st.info("Você não precisa se identificar: não pedimos nome, e-mail, CPF nem telefone.", icon="🔒")
 
-        with st.container(key="card_perfil"):
+        col_perfil, col_resultado = st.columns(2, gap="medium")
+        with col_perfil, st.container(key="card_perfil"):
             cabecalho_cartao("1", "Seu perfil", "Ajuda a comparar resultados por grupo na pesquisa.", selo="opcional")
-            col_setor, col_area = st.columns(2)
-            setor = col_setor.selectbox("Setor de atuação", options=SETORES, index=None, key="setor_box", placeholder="Prefiro não informar")
-            area = col_area.selectbox("Área", options=AREAS, index=None, key="area_box", placeholder="Prefiro não informar")
+            setor = st.selectbox("Setor de atuação", options=SETORES, index=None, key="setor_box", placeholder="Prefiro não informar")
+            area = st.selectbox("Área", options=AREAS, index=None, key="area_box", placeholder="Prefiro não informar")
 
         codigo_atual = st.session_state.codigo_usuario
         opcao_historico = (
             f"Guardar no histórico do código {mascarar_codigo(codigo_atual)}" if codigo_atual
             else "Guardar no meu histórico, com um código de acesso anônimo"
         )
-        with st.container(key="card_resultado"):
+        with col_resultado, st.container(key="card_resultado"):
             cabecalho_cartao("2", "O que fazer com o seu resultado", "Com o histórico, você acompanha sua evolução ao refazer o teste.")
             guardar = st.radio(
                 "O que fazer com o seu resultado?",
@@ -1177,22 +1190,26 @@ def pagina_diagnostico():
         cabecalho_pagina("Seu relatório de segurança")
         if codigo and st.session_state.codigo_recem_criado:
             exibir_codigo_novo(codigo)
-        painel_score(score_1000, classificacao, mensagem, cor_hex)
-        if st.session_state.resultado_salvo:
-            st.caption(
-                "Resultado guardado no seu histórico e, de forma anônima, nas estatísticas." if codigo
-                else "Resultado guardado de forma anônima nas estatísticas. Ele não fica no seu histórico."
-            )
-
-        titulo_secao("Desempenho por área")
-        painel_blocos(respostas)
+        col_score, col_blocos = st.columns(2, gap="medium")
+        with col_score:
+            painel_score(score_1000, classificacao, mensagem, cor_hex)
+            if st.session_state.resultado_salvo:
+                st.caption(
+                    "Resultado guardado no seu histórico e, de forma anônima, nas estatísticas." if codigo
+                    else "Resultado guardado de forma anônima nas estatísticas. Ele não fica no seu histórico."
+                )
+        with col_blocos:
+            st.markdown('<h2 class="section-title" style="margin-top:0">Desempenho por área</h2>', unsafe_allow_html=True)
+            painel_blocos(respostas)
         with st.expander(f"Como o seu CyberScore de {score_1000} foi calculado"):
             explicar_calculo(respostas)
 
-        titulo_secao("Onde você está exposto")
-        exibir_armadilhas()
-
-        exibir_analise_ia_do_diagnostico(score_1000)
+        col_armadilhas, col_plano = st.columns([1.1, 1], gap="medium")
+        with col_armadilhas:
+            titulo_secao("Onde você está exposto")
+            exibir_armadilhas()
+        with col_plano:
+            exibir_analise_ia_do_diagnostico(score_1000)
 
 
         st.markdown("<br>", unsafe_allow_html=True)
@@ -1209,6 +1226,11 @@ def pagina_diagnostico():
         st.session_state.ordem_opcoes = sortear_ordem_opcoes()
 
 
+    with st.container(key="coluna_leitura"):
+        exibir_pergunta(etapa, pergunta, total_perguntas)
+
+
+def exibir_pergunta(etapa, pergunta, total_perguntas):
     # Progresso visual e contexto da pergunta
     progresso = (etapa) / total_perguntas
     st.markdown(
@@ -1265,9 +1287,11 @@ def exibir_protocolo(incidente):
         f'<li><span class="passo-num">{n}</span><div><b>{escape(titulo)}</b><p>{escape(texto)}</p></div></li>'
         for n, (titulo, texto) in enumerate(incidente["passos"], start=1)
     )
-    st.markdown(f'<ol class="protocolo" role="list">{passos}</ol>', unsafe_allow_html=True)
-    titulo_secao("Cartilhas oficiais")
-    exibir_cartilhas(incidente["cartilhas"])
+    col_passos, col_cartilhas = st.columns([1.5, 1], gap="large")
+    col_passos.markdown(f'<ol class="protocolo" role="list">{passos}</ol>', unsafe_allow_html=True)
+    with col_cartilhas:
+        titulo_secao("Cartilhas oficiais")
+        exibir_cartilhas(incidente["cartilhas"])
 
 
 def pagina_consultoria():
@@ -1278,10 +1302,10 @@ def pagina_consultoria():
 
     # Framework visual: o usuário escolhe o incidente e recebe o protocolo, sem depender da IA
     escolhido = st.session_state.get("incidente_escolhido")
-    colunas = st.columns(2)
+    colunas = st.columns(3)
     for i, incidente in enumerate(INCIDENTES):
         selecionado = escolhido == i
-        if colunas[i % 2].button(
+        if colunas[i % 3].button(
             ("✓ " if selecionado else "") + incidente["titulo"],  # indica a seleção sem depender só da cor
             key=f"inc_{i}", use_container_width=True,
             type="primary" if selecionado else "secondary",
@@ -1295,56 +1319,62 @@ def pagina_consultoria():
 
     st.divider()
     titulo_secao("Não encontrou o seu caso?")
-    relato = st.text_area("Conte com suas palavras o que aconteceu", height=150, placeholder="Ex.: Cliquei num link que chegou no WhatsApp e agora meu celular está abrindo propagandas sozinho…")
-    st.warning(
-        "Não escreva senhas, CPF, números de cartão, nomes ou dados de outras pessoas. Ao clicar em "
-        "Analisar, o relato é enviado à Groq (serviço de IA nos EUA) e não é guardado pelo CyberScore.",
-        icon="⚠️",
+    col_relato, col_resposta = st.columns(2, gap="large")
+    with col_relato:
+        relato = st.text_area("Conte com suas palavras o que aconteceu", height=150, placeholder="Ex.: Cliquei num link que chegou no WhatsApp e agora meu celular está abrindo propagandas sozinho…")
+        st.warning(
+            "Não escreva senhas, CPF, números de cartão, nomes ou dados de outras pessoas. Ao clicar em "
+            "Analisar, o relato é enviado à Groq (serviço de IA nos EUA) e não é guardado pelo CyberScore.",
+            icon="⚠️",
+        )
+        analisar = st.button("Analisar Ameaça")
+    if analisar:
+        with col_resposta:
+            analisar_relato(relato)
+
+
+def analisar_relato(relato):
+    if not relato.strip():
+        st.warning("Descreva o que aconteceu antes de enviar.")
+        return
+    encontrados = dados_sensiveis_no_texto(relato)
+    if encontrados:
+        st.error(
+            f"Parece que o relato contém {', '.join(encontrados)}. Apague essa informação e envie de novo: "
+            "ela não é necessária para a análise."
+        )
+        return
+
+
+    prompt = (
+        "Você ajuda pessoas comuns no Brasil, sem conhecimento técnico, que acabaram de sofrer um problema de segurança digital. "
+        "Leia o relato abaixo, identifique o que provavelmente aconteceu (pode haver mais de um problema) e diga o que fazer AGORA, "
+        "em no máximo 5 passos numerados, do mais urgente ao menos urgente. Linguagem simples, sem jargão, frases curtas. "
+        "Se algo no relato for um mal-entendido (ex.: algo que a pessoa acha que aconteceu mas é improvável), explique em uma frase. "
+        "Termine indicando onde buscar ajuda oficial quando fizer sentido (banco, delegacia online, suporte da plataforma). "
+        "Não use tabelas. Não escreva links nem endereços de sites (cite só o nome do serviço, ex.: 'delegacia online do seu estado'), "
+        "nem recomende marcas de produtos.\n\n"
+        f"Relato: {relato.strip()}"
     )
 
 
-    if st.button("Analisar Ameaça"):
-        if not relato.strip():
-            st.warning("Descreva o que aconteceu antes de enviar.")
-            return
-        encontrados = dados_sensiveis_no_texto(relato)
-        if encontrados:
+    with st.spinner("Analisando o relato..."):
+        resposta = perguntar_ia(prompt)
+        if resposta:
+            st.success(resposta)
+        else:
             st.error(
-                f"Parece que o relato contém {', '.join(encontrados)}. Apague essa informação e envie de novo: "
-                "ela não é necessária para a análise."
+                "**Primeiros passos (modo offline):**\n\n"
+                "1. **Desconecte:** ative o modo avião ou desligue o Wi-Fi do aparelho afetado.\n"
+                "2. **Proteja o dinheiro:** se envolve banco ou Pix, ligue para o banco pelo número do verso do cartão e peça bloqueio.\n"
+                "3. **Troque senhas de outro aparelho:** comece pelo e-mail, depois banco e redes sociais, e ative a verificação em duas etapas.\n"
+                "4. **Avise seus contatos** por outro canal, se alguma conta sua foi invadida."
             )
-            return
+            st.caption("IA indisponível no momento: exibindo os passos padrão.")
 
-
-        prompt = (
-            "Você ajuda pessoas comuns no Brasil, sem conhecimento técnico, que acabaram de sofrer um problema de segurança digital. "
-            "Leia o relato abaixo, identifique o que provavelmente aconteceu (pode haver mais de um problema) e diga o que fazer AGORA, "
-            "em no máximo 5 passos numerados, do mais urgente ao menos urgente. Linguagem simples, sem jargão, frases curtas. "
-            "Se algo no relato for um mal-entendido (ex.: algo que a pessoa acha que aconteceu mas é improvável), explique em uma frase. "
-            "Termine indicando onde buscar ajuda oficial quando fizer sentido (banco, delegacia online, suporte da plataforma). "
-            "Não use tabelas. Não escreva links nem endereços de sites (cite só o nome do serviço, ex.: 'delegacia online do seu estado'), "
-            "nem recomende marcas de produtos.\n\n"
-            f"Relato: {relato.strip()}"
-        )
-
-
-        with st.spinner("Analisando o relato..."):
-            resposta = perguntar_ia(prompt)
-            if resposta:
-                st.success(resposta)
-            else:
-                st.error(
-                    "**Primeiros passos (modo offline):**\n\n"
-                    "1. **Desconecte:** ative o modo avião ou desligue o Wi-Fi do aparelho afetado.\n"
-                    "2. **Proteja o dinheiro:** se envolve banco ou Pix, ligue para o banco pelo número do verso do cartão e peça bloqueio.\n"
-                    "3. **Troque senhas de outro aparelho:** comece pelo e-mail, depois banco e redes sociais, e ative a verificação em duas etapas.\n"
-                    "4. **Avise seus contatos** por outro canal, se alguma conta sua foi invadida."
-                )
-                st.caption("IA indisponível no momento: exibindo os passos padrão.")
-
-        relacionados = incidentes_relacionados(relato)
-        titulo_secao("Cartilhas recomendadas")
-        exibir_cartilhas([c for inc in relacionados for c in inc["cartilhas"]] or ["caiu", "golpes"])
+    relacionados = incidentes_relacionados(relato)
+    titulo_secao("Cartilhas recomendadas")
+    exibir_cartilhas([c for inc in relacionados for c in inc["cartilhas"]] or ["caiu", "golpes"])
 
 
 
@@ -1360,20 +1390,24 @@ def pagina_historico():
         if st.session_state.tentativas_codigo >= MAX_TENTATIVAS_CODIGO:
             st.error("Muitas tentativas com código inválido. Feche esta aba e abra o site de novo para tentar outra vez.")
             return
-        with st.form("entrar_codigo"):
-            digitado = st.text_input("Código de acesso", placeholder="XXXX-XXXX-XXXX-XXXX", max_chars=24)
-            entrar = st.form_submit_button("Ver meu histórico")
-        if entrar:
-            normalizado = normalizar_codigo(digitado)
-            if normalizado and repo.codigo_tem_historico(normalizado):
-                st.session_state.codigo_usuario = normalizado
-                st.session_state.tentativas_codigo = 0
-                st.rerun()
-            st.session_state.tentativas_codigo += 1
-            st.error("Código não encontrado. Confira se digitou certo (letras e números, sem 0, 1, I, L ou O).")
-        st.caption(
-            "Ainda não tem um código? Ele é criado quando você faz o Diagnóstico e escolhe "
-            "**Guardar no meu histórico**."
+        col_form, col_info = st.columns(2, gap="large")
+        with col_form:
+            with st.form("entrar_codigo"):
+                digitado = st.text_input("Código de acesso", placeholder="XXXX-XXXX-XXXX-XXXX", max_chars=24)
+                entrar = st.form_submit_button("Ver meu histórico")
+            if entrar:
+                normalizado = normalizar_codigo(digitado)
+                if normalizado and repo.codigo_tem_historico(normalizado):
+                    st.session_state.codigo_usuario = normalizado
+                    st.session_state.tentativas_codigo = 0
+                    st.rerun()
+                st.session_state.tentativas_codigo += 1
+                st.error("Código não encontrado. Confira se digitou certo (letras e números, sem 0, 1, I, L ou O).")
+        col_info.markdown(
+            '<div class="nota"><span aria-hidden="true">🔑</span><span><b>Ainda não tem um código?</b> '
+            "Ele é criado quando você faz o Diagnóstico e escolhe guardar no histórico. "
+            "O código é a única chave dos seus dados: nós não o guardamos e não conseguimos recuperá-lo.</span></div>",
+            unsafe_allow_html=True,
         )
         return
 
@@ -1474,26 +1508,29 @@ def tela_acesso():
     )
     st.markdown(f'<div class="recursos">{cards}</div>', unsafe_allow_html=True)
 
-    with st.container(key="card_acesso"):
+    # No computador: resumo da privacidade à esquerda e aceite à direita (no celular, um embaixo do outro)
+    col_resumo, col_aceite = st.columns([1.15, 1], gap="medium")
+    with col_resumo, st.container(key="card_acesso"):
         cabecalho_cartao("✓", "Antes de entrar", "Veja como tratamos os seus dados. É rápido.")
         st.markdown(legal.RESUMO_PRIVACIDADE)
-        st.markdown(f'<div class="nota">{legal.AVISO_COOKIES_HTML}</div>', unsafe_allow_html=True)
-        with st.expander("Ler a Política de Privacidade, os Termos de Uso e a Política de Cookies completos"):
-            st.caption(f"Última atualização: {legal.DATA_ATUALIZACAO}.")
-            textos_legais()
 
-    with st.container(key="card_aceite"):
-        cabecalho_cartao("!", "Seu aceite", "Marque as duas opções para usar o site.")
-        aceite_termos = st.checkbox("Li e aceito a Política de Privacidade e os Termos de Uso.")
-        aceite_idade = st.checkbox(
-            "Tenho 18 anos ou mais e estou ciente de que as respostas do diagnóstico são guardadas "
-            "de forma anônima para a pesquisa acadêmica."
-        )
-    if st.button("Aceitar e entrar", type="primary", disabled=not (aceite_termos and aceite_idade),
-                 use_container_width=True):
-        st.session_state.acesso_liberado = True
-        st.rerun()
-    st.caption("Se não concordar, basta fechar esta página. Nada é gravado antes do aceite.")
+    with col_aceite:
+        with st.container(key="card_aceite"):
+            cabecalho_cartao("!", "Seu aceite", "Marque as duas opções para usar o site.")
+            st.markdown(f'<div class="nota">{legal.AVISO_COOKIES_HTML}</div>', unsafe_allow_html=True)
+            with st.expander("Ler a Política de Privacidade, os Termos e os Cookies completos"):
+                st.caption(f"Última atualização: {legal.DATA_ATUALIZACAO}.")
+                textos_legais()
+            aceite_termos = st.checkbox("Li e aceito a Política de Privacidade e os Termos de Uso.")
+            aceite_idade = st.checkbox(
+                "Tenho 18 anos ou mais e estou ciente de que as respostas do diagnóstico são guardadas "
+                "de forma anônima para a pesquisa acadêmica."
+            )
+        if st.button("Aceitar e entrar", type="primary", disabled=not (aceite_termos and aceite_idade),
+                     use_container_width=True):
+            st.session_state.acesso_liberado = True
+            st.rerun()
+        st.caption("Se não concordar, basta fechar esta página. Nada é gravado antes do aceite.")
 
 
 def grafico_medias(grupos, rotulo, cor):
