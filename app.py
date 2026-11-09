@@ -1,5 +1,6 @@
 import hmac
 import importlib
+import io
 import os
 import random
 import re
@@ -8,6 +9,7 @@ from html import escape
 from pathlib import Path
 
 
+import altair as alt
 import pandas as pd
 import streamlit as st
 from groq import Groq
@@ -16,7 +18,7 @@ import legal
 # O servidor pode manter na memória uma versão antiga de legal.py depois de um deploy;
 # recarregar garante que os textos (e qualquer nome novo) correspondam ao app.py atual.
 legal = importlib.reload(legal)
-from repositorio import TAMANHO_MINIMO_GRUPO, Repositorio, gerar_codigo, normalizar_codigo
+from repositorio import Repositorio, gerar_codigo, normalizar_codigo
 
 
 
@@ -329,7 +331,7 @@ st.markdown(
         .step-row b { color: var(--text); font-weight: 600; }
 
 
-        .score-card { position: relative; display: flex; align-items: center; gap: 28px; background: var(--surface); border: 1px solid var(--border); border-radius: 22px; padding: 28px 30px; margin-bottom: 26px; overflow: hidden; }
+        .score-card { position: relative; display: flex; align-items: center; gap: 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 22px; padding: 28px 28px; margin-bottom: 14px; overflow: hidden; }
         .score-card::before { content: ""; position: absolute; inset: 0; background: radial-gradient(420px 220px at 0% 0%, var(--glow), transparent 70%); opacity: 0.22; pointer-events: none; }
         .score-gauge { position: relative; flex: 0 0 auto; width: 168px; height: 168px; }
         .score-gauge svg { transform: rotate(-90deg); }
@@ -338,11 +340,14 @@ st.markdown(
         .score-den { font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); margin-top: 4px; letter-spacing: 0.08em; }
         .score-info { position: relative; min-width: 0; }
         .score-kicker { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-        .score-class { font-family: var(--font-display); font-weight: 700; font-size: 28px; letter-spacing: -0.02em; line-height: 1.1; margin: 0 0 8px 0; }
+        .score-class { font-family: var(--font-display); font-weight: 700; font-size: clamp(20px, 1.75vw, 27px); letter-spacing: -0.02em; line-height: 1.15; margin: 0 0 10px 0;
+            white-space: nowrap; word-break: normal; overflow-wrap: normal; hyphens: none; }
         .score-msg { color: var(--muted); font-size: 15px; line-height: 1.5; margin: 0 0 14px 0; }
         .score-meta { display: inline-flex; gap: 8px; flex-wrap: wrap; }
         .tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; color: var(--text); background: var(--surface-2); border: 1px solid var(--border-strong); padding: 4px 10px; border-radius: 8px; }
-        .section-title { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 600; font-size: 20px !important; letter-spacing: -0.015em; margin: 26px 0 10px 0; padding: 0 !important; color: var(--text); }
+        .section-title { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 600; font-size: 20px !important; letter-spacing: -0.015em; margin: 30px 0 16px 0 !important; padding: 0 !important; color: var(--text); }
+        .relatorio-espaco { height: 2px; }
+        [data-testid="stExpander"] { margin-bottom: 4px; }
         .section-title::before { content: ""; width: 4px; height: 20px; border-radius: 2px; background: linear-gradient(180deg, #8B5CF6, #22D3EE); }
         .bloco-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px 20px; }
         .bloco-row { display: grid; grid-template-columns: 190px 1fr 46px; align-items: center; gap: 14px; padding: 8px 0; }
@@ -1084,7 +1089,7 @@ def painel_score(score, classificacao, mensagem, cor):
             </div>
             <div class="score-info">
                 <div class="score-kicker">CyberScore</div>
-                <h2 class="score-class" style="color:{cor} !important;">{escape(classificacao)}</h2>
+                <h2 class="score-class" style="color:{cor} !important;">{escape(classificacao).replace("/", "/<wbr>")}</h2>
                 <p class="score-msg">{escape(mensagem)}</p>
                 <div class="score-meta">{tags}</div>
             </div>
@@ -1204,12 +1209,13 @@ def pagina_diagnostico():
                     else "Resultado guardado de forma anônima nas estatísticas. Ele não fica no seu histórico."
                 )
         with col_blocos:
-            st.markdown('<h2 class="section-title" style="margin-top:0">Desempenho por área</h2>', unsafe_allow_html=True)
+            st.markdown('<h2 class="section-title" style="margin-top:0 !important">Desempenho por área</h2>', unsafe_allow_html=True)
             painel_blocos(respostas)
         with st.expander(f"Como o seu CyberScore de {score_1000} foi calculado"):
             explicar_calculo(respostas)
+        st.markdown('<div class="relatorio-espaco"></div>', unsafe_allow_html=True)
 
-        col_armadilhas, col_plano = st.columns([1.1, 1], gap="medium")
+        col_armadilhas, col_plano = st.columns([1.1, 1], gap="large")
         with col_armadilhas:
             titulo_secao("Onde você está exposto")
             exibir_armadilhas()
@@ -1538,14 +1544,156 @@ def tela_acesso():
         st.caption("Se não concordar, basta fechar esta página. Nada é gravado antes do aceite.")
 
 
-def grafico_medias(grupos, rotulo, cor):
-    if not grupos:
-        st.caption(f"Ainda não há {rotulo.lower()} com pelo menos {TAMANHO_MINIMO_GRUPO} participantes.")
-        return
-    tabela = pd.DataFrame(grupos).rename(columns={"grupo": rotulo, "pessoas": "Participantes", "media": "Média"})
-    st.bar_chart(tabela, x=rotulo, y="Média", color=cor)
-    with st.expander("Ver como tabela"):  # alternativa acessível ao gráfico
-        st.dataframe(tabela.round({"Média": 0}), hide_index=True, use_container_width=True)
+# ---------- Painel de Administração: tabelas, gráficos e exportação ----------
+
+FAIXAS = [("Risco Crítico", "#EF4444"), ("Alerta/Atenção", "#F59E0B"), ("Postura Segura", "#10B981")]
+ESCALA_SCORE = alt.Scale(type="threshold", domain=[400, 700], range=[cor for _, cor in FAIXAS])
+ESCALA_PERCENTUAL = alt.Scale(type="threshold", domain=[40, 70], range=[cor for _, cor in FAIXAS])
+COLUNAS_RESUMO = ["Participante", "Data e hora", "Setor", "Área", "CyberScore", "Classificação", "Histórico"]
+
+
+def tabela_registros(registros, versao):
+    """Uma linha por diagnóstico: perfil, nota, desempenho por bloco e a resposta de cada pergunta."""
+    linhas = []
+    for n, r in enumerate((r for r in registros if r["versao"] == versao), start=1):
+        linha = {
+            "Participante": f"Participante {n}",
+            "Data e hora": r["criado_em"].replace(tzinfo=None),  # já no horário de Brasília
+            "Setor": r["setor"] or "Não informado",
+            "Área": r["area"] or "Não informado",
+            "CyberScore": r["score"],
+            "Classificação": classificar_score_semantico(r["score"])[0],
+            "Histórico": r["historico"] or "—",
+            "Versão": r["versao"],
+        }
+        if versao == VERSAO_QUESTIONARIO and r["respostas"]:
+            for bloco, proporcao in score_por_bloco(r["respostas"]).items():
+                linha[f"% {bloco}"] = round(proporcao * 100)
+            por_pergunta = {x["indice_pergunta"]: x for x in r["respostas"]}
+            for i, p in enumerate(PERGUNTAS):
+                x = por_pergunta.get(i)
+                linha[f"P{i + 1:02d} {p['tema']}"] = p["opcoes"][x["opcao"]][0] if x else ""
+                linha[f"P{i + 1:02d} pontos"] = x["pontos"] if x else None
+        linhas.append(linha)
+    return pd.DataFrame(linhas)
+
+
+def media_por(df, coluna):
+    tabela = (df.groupby(coluna)["CyberScore"]
+              .agg(Participantes="count", Média="mean", Mínimo="min", Máximo="max").reset_index())
+    tabela["Média"] = tabela["Média"].round(0)
+    return tabela.sort_values("Média", ascending=False)
+
+
+def media_por_bloco(df):
+    colunas = [c for c in df.columns if c.startswith("% ")]
+    if not colunas:
+        return pd.DataFrame(columns=["Área temática", "Média (%)"])
+    return pd.DataFrame({
+        "Área temática": [c[2:] for c in colunas],
+        "Média (%)": [round(df[c].mean(), 0) for c in colunas],
+    }).sort_values("Média (%)")
+
+
+def contagem_faixas(df):
+    contagem = df["Classificação"].value_counts()
+    return pd.DataFrame({"Classificação": [f for f, _ in FAIXAS], "Participantes": [int(contagem.get(f, 0)) for f, _ in FAIXAS]})
+
+
+def tema_grafico(grafico, exportar=False):
+    return (grafico
+            .configure(background="#131316" if exportar else "transparent", padding=12)
+            .configure_axis(labelColor="#C9C9D3", titleColor="#9A9AA8", gridColor="#27272D", domainColor="#3A3A42",
+                            tickColor="#3A3A42", labelFont="Inter", titleFont="Inter", labelFontSize=12, titleFontSize=12,
+                            labelLimit=220)
+            .configure_view(strokeWidth=0)
+            .configure_title(color="#ECECF1", font="Space Grotesk", fontSize=16, anchor="start", offset=14)
+            .configure_legend(labelColor="#C9C9D3", titleColor="#9A9AA8", labelFont="Inter"))
+
+
+def grafico_grupos(tabela, coluna, titulo, largura="container"):
+    altura = max(150, 42 * len(tabela))
+    base = alt.Chart(tabela).encode(
+        y=alt.Y(f"{coluna}:N", sort="-x", title=None),
+        # Domínio além de 1000 deixa espaço para o rótulo à direita da barra; o eixo mostra só até 1000
+        x=alt.X("Média:Q", scale=alt.Scale(domain=[0, 1250]), title="Média do CyberScore",
+                axis=alt.Axis(values=[0, 250, 500, 750, 1000], format="d")),
+    )
+    barras = base.mark_bar(cornerRadiusEnd=6).encode(
+        color=alt.Color("Média:Q", scale=ESCALA_SCORE, legend=None),
+        tooltip=[alt.Tooltip(f"{coluna}:N"), "Participantes:Q", "Média:Q", "Mínimo:Q", "Máximo:Q"],
+    )
+    rotulos = base.transform_calculate(
+        rotulo="format(datum['Média'], '.0f') + '   ·   ' + datum['Participantes'] + ' part.'"
+    ).mark_text(align="left", dx=8, color="#ECECF1", font="Inter", fontSize=12).encode(text="rotulo:N")
+    return (barras + rotulos).properties(title=titulo, height=altura, width=largura)
+
+
+def grafico_faixas(tabela, largura="container"):
+    return alt.Chart(tabela).mark_arc(innerRadius=55, outerRadius=95, cornerRadius=4, padAngle=0.02).encode(
+        theta="Participantes:Q",
+        color=alt.Color("Classificação:N", scale=alt.Scale(domain=[f for f, _ in FAIXAS], range=[c for _, c in FAIXAS]),
+                        legend=alt.Legend(orient="right", title=None, labelFontSize=13, symbolSize=160)),
+        tooltip=["Classificação:N", "Participantes:Q"],
+    ).properties(title="Participantes por faixa de resultado", height=250, width=largura)
+
+
+def grafico_blocos(tabela, largura="container"):
+    base = alt.Chart(tabela).encode(
+        y=alt.Y("Área temática:N", sort="x", title=None),
+        x=alt.X("Média (%):Q", scale=alt.Scale(domain=[0, 115]), title="Acerto médio (%)",
+                axis=alt.Axis(values=[0, 25, 50, 75, 100], format="d")),
+    )
+    barras = base.mark_bar(cornerRadiusEnd=6).encode(
+        color=alt.Color("Média (%):Q", scale=ESCALA_PERCENTUAL, legend=None), tooltip=["Área temática:N", "Média (%):Q"])
+    rotulos = base.mark_text(align="left", dx=8, color="#ECECF1", font="Inter", fontSize=12).encode(
+        text=alt.Text("Média (%):Q", format=".0f"))
+    return (barras + rotulos).properties(title="Acerto médio por tema do questionário", height=230, width=largura)
+
+
+def grafico_distribuicao(df, largura="container"):
+    return alt.Chart(df).mark_bar(color=COR_ROXO, cornerRadiusTopLeft=5, cornerRadiusTopRight=5).encode(
+        x=alt.X("CyberScore:Q", bin=alt.Bin(step=100, extent=[0, 1000]), title="CyberScore",
+                axis=alt.Axis(format="d", values=[0, 200, 400, 600, 800, 1000])),
+        y=alt.Y("count():Q", title="Participantes", axis=alt.Axis(format="d", tickMinStep=1)),
+        tooltip=[alt.Tooltip("count():Q", title="Participantes")],
+    ).properties(title="Distribuição das notas", height=230, width=largura)
+
+
+def grafico_por_dia(df, largura="container"):
+    return alt.Chart(df).mark_bar(color=COR_CIANO, cornerRadiusTopLeft=4, cornerRadiusTopRight=4).encode(
+        x=alt.X(field="Data e hora", type="temporal", timeUnit="yearmonthdate", title="Dia",
+                axis=alt.Axis(format="%d/%m", labelAngle=0)),
+        y=alt.Y("count():Q", title="Diagnósticos", axis=alt.Axis(format="d", tickMinStep=1)),
+        tooltip=[alt.Tooltip(field="Data e hora", type="temporal", timeUnit="yearmonthdate", title="Dia", format="%d/%m/%Y"),
+                 alt.Tooltip("count():Q", title="Diagnósticos")],
+    ).properties(title="Diagnósticos por dia", height=230, width=largura)
+
+
+def arquivo_excel(df, setor, area, blocos, faixas, resumo):
+    buffer = io.BytesIO()
+    with pd.ExcelWriter(buffer, engine="openpyxl") as planilha:
+        for nome, tabela in [("Resumo", resumo), ("Registros", df), ("Média por setor", setor), ("Média por área", area),
+                             ("Média por tema", blocos), ("Faixas de resultado", faixas)]:
+            tabela.to_excel(planilha, sheet_name=nome, index=False)
+            aba = planilha.sheets[nome]
+            for i, coluna in enumerate(tabela.columns, start=1):
+                largura = max([len(str(coluna))] + [len(str(v)) for v in tabela[coluna].head(200)])
+                aba.column_dimensions[aba.cell(row=1, column=i).column_letter].width = min(max(largura + 2, 10), 60)
+            aba.freeze_panes = "A2"
+    return buffer.getvalue()
+
+
+def arquivo_dashboard_html(df, setor, area, blocos, faixas, carimbo):
+    largura = 430
+    painel = alt.vconcat(
+        alt.hconcat(grafico_grupos(setor, "Setor", "Média por setor", largura),
+                    grafico_grupos(area, "Área", "Média por área", largura)),
+        alt.hconcat(grafico_faixas(faixas, largura), grafico_blocos(blocos, largura)),
+        alt.hconcat(grafico_distribuicao(df, largura), grafico_por_dia(df, largura)),
+        spacing=36,
+    ).properties(title=f"CyberScore · Painel da pesquisa · {len(df)} registros · gerado em {carimbo}")
+    return tema_grafico(painel, exportar=True).to_html()
 
 
 def voltar_ao_site():
@@ -1587,32 +1735,118 @@ def pagina_admin():
     if c2.button("Sair", use_container_width=True):
         voltar_ao_site()
 
-    titulo_secao("Resultados da pesquisa")
-    st.caption(
-        "Médias anônimas de todos os diagnósticos. Grupos com menos de "
-        f"{TAMANHO_MINIMO_GRUPO} pessoas ficam ocultos para ninguém ser identificado."
-    )
     try:
-        estatisticas = repo.estatisticas_pesquisa(VERSAO_QUESTIONARIO)
-        if estatisticas["total"] < TAMANHO_MINIMO_GRUPO:
-            st.info(f"Aguardando coleta de dados: as médias aparecem a partir de {TAMANHO_MINIMO_GRUPO} participantes.")
-        else:
-            c1, c2 = st.columns(2)
-            c1.metric("Média do CyberScore", f"{estatisticas['media']:.0f}")
-            c2.metric("Participantes", estatisticas["total"])
-            titulo_secao("Média por setor")
-            grafico_medias(estatisticas["por_setor"], "Setor", COR_ROXO)
-            titulo_secao("Média por área")
-            grafico_medias(estatisticas["por_area"], "Área", COR_CIANO)
+        registros = repo.registros()
     except Exception as erro:
         print(f"[banco] falha no painel: {erro}")
-        st.error("Não foi possível carregar o painel agora.")
-
-
-    st.divider()
-    titulo_secao("Manutenção")
+        st.error("Não foi possível carregar os dados agora.")
+        return
     if st.session_state.pop("banco_limpo", False):
         st.success("Banco de dados apagado.")
+    if not registros:
+        st.info("Nenhum diagnóstico registrado ainda.")
+        manutencao_admin()
+        return
+
+    versoes = sorted({r["versao"] for r in registros}, reverse=True)
+    col_versao, col_setor, col_area = st.columns([1, 2, 2])
+    versao = col_versao.selectbox(
+        "Versão do questionário", versoes, index=versoes.index(VERSAO_QUESTIONARIO) if VERSAO_QUESTIONARIO in versoes else 0,
+        help="Versões diferentes têm perguntas diferentes, por isso não são misturadas.",
+    )
+    df = tabela_registros(registros, versao)
+    filtro_setor = col_setor.multiselect("Filtrar por setor", sorted(df["Setor"].unique()), placeholder="Todos os setores")
+    filtro_area = col_area.multiselect("Filtrar por área", sorted(df["Área"].unique()), placeholder="Todas as áreas")
+    if filtro_setor:
+        df = df[df["Setor"].isin(filtro_setor)]
+    if filtro_area:
+        df = df[df["Área"].isin(filtro_area)]
+    if df.empty:
+        st.info("Nenhum registro com esses filtros.")
+        return
+
+    setor, area = media_por(df, "Setor"), media_por(df, "Área")
+    blocos, faixas = media_por_bloco(df), contagem_faixas(df)
+    pessoas_historico = df.loc[df["Histórico"] != "—", "Histórico"].nunique()
+    k1, k2, k3, k4 = st.columns(4)
+    k1.metric("Registros", len(df))
+    k2.metric("Média do CyberScore", f"{df['CyberScore'].mean():.0f}")
+    k3.metric("Em risco crítico", f"{(df['Classificação'] == 'Risco Crítico').mean():.0%}")
+    k4.metric("Pessoas com histórico", pessoas_historico)
+
+    aba_registros, aba_graficos, aba_exportar, aba_manutencao = st.tabs(
+        ["📋 Registros", "📊 Dashboards", "⬇️ Exportar", "⚙️ Manutenção"])
+
+    with aba_registros:
+        st.caption(
+            "Cada linha é um diagnóstico concluído, do mais antigo ao mais recente. A coluna Histórico mostra um apelido "
+            "(H1, H2…) para quem guardou histórico: a mesma pessoa pode aparecer em mais de uma linha. "
+            "Nenhuma informação que identifique alguém é coletada."
+        )
+        detalhado = st.toggle("Mostrar o desempenho por tema e a resposta de cada pergunta")
+        colunas = list(df.columns) if detalhado else [c for c in COLUNAS_RESUMO if c in df.columns]
+        st.dataframe(
+            df[colunas], hide_index=True, use_container_width=True, height=min(560, 38 * (len(df) + 1) + 4),
+            column_config={
+                "CyberScore": st.column_config.ProgressColumn("CyberScore", min_value=0, max_value=1000, format="%d"),
+                "Data e hora": st.column_config.DatetimeColumn("Data e hora", format="DD/MM/YYYY HH:mm"),
+            },
+        )
+
+    with aba_graficos:
+        graficos = [
+            (grafico_grupos(setor, "Setor", "Média por setor"), grafico_grupos(area, "Área", "Média por área")),
+            (grafico_faixas(faixas), grafico_blocos(blocos)),
+            (grafico_distribuicao(df), grafico_por_dia(df)),
+        ]
+        for linha, (esquerda, direita) in enumerate(graficos):
+            col_esq, col_dir = st.columns(2, gap="medium")
+            for coluna, grafico, lado in ((col_esq, esquerda, "e"), (col_dir, direita, "d")):
+                with coluna, st.container(key=f"card_grafico_{linha}{lado}"):
+                    st.altair_chart(tema_grafico(grafico), use_container_width=True, theme=None)
+        with st.expander("Ver os números dos gráficos em tabela"):  # alternativa acessível aos gráficos
+            t1, t2, t3 = st.columns(3)
+            t1.dataframe(setor, hide_index=True, use_container_width=True)
+            t2.dataframe(area, hide_index=True, use_container_width=True)
+            t3.dataframe(blocos, hide_index=True, use_container_width=True)
+
+    with aba_exportar:
+        carimbo = pd.Timestamp.now(tz="America/Sao_Paulo").strftime("%d/%m/%Y %H:%M")
+        nome = f"cyberscore_v{versao}_{pd.Timestamp.now(tz='America/Sao_Paulo'):%Y-%m-%d}"
+        resumo = pd.DataFrame({
+            "Indicador": ["Registros", "Média do CyberScore", "Em risco crítico (%)", "Pessoas com histórico",
+                          "Versão do questionário", "Filtros aplicados", "Gerado em"],
+            "Valor": [len(df), round(df["CyberScore"].mean()), round((df["Classificação"] == "Risco Crítico").mean() * 100),
+                      pessoas_historico, versao,
+                      "; ".join(filtro_setor + filtro_area) or "nenhum", carimbo],
+        })
+        st.markdown(
+            '<div class="nota"><span aria-hidden="true">📦</span><span>Os arquivos respeitam a versão e os filtros '
+            "escolhidos acima. A <b>tabela única</b> traz, em cada linha, o perfil, a nota, o desempenho por tema e a "
+            "resposta de cada pergunta, pronta para análise no Excel, Google Planilhas, SPSS ou Python.</span></div>",
+            unsafe_allow_html=True,
+        )
+        e1, e2, e3 = st.columns(3, gap="medium")
+        with e1, st.container(key="card_exp_excel"):
+            cabecalho_cartao("1", "Planilha completa", "Excel com abas: resumo, registros, médias por setor, área e tema, e faixas.")
+            st.download_button("Baixar Excel (.xlsx)", arquivo_excel(df, setor, area, blocos, faixas, resumo),
+                               file_name=f"{nome}.xlsx", use_container_width=True,
+                               mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+        with e2, st.container(key="card_exp_csv"):
+            cabecalho_cartao("2", "Tabela única", "Todos os registros num só arquivo CSV (separado por ponto e vírgula).")
+            st.download_button("Baixar CSV (.csv)", df.to_csv(index=False, sep=";", decimal=",", date_format="%d/%m/%Y %H:%M")
+                               .encode("utf-8-sig"), file_name=f"{nome}.csv", mime="text/csv", use_container_width=True)
+        with e3, st.container(key="card_exp_html"):
+            cabecalho_cartao("3", "Dashboard para apresentar", "Página com todos os gráficos, que abre em qualquer navegador.")
+            st.download_button("Baixar dashboard (.html)", arquivo_dashboard_html(df, setor, area, blocos, faixas, carimbo),
+                               file_name=f"{nome}_dashboard.html", mime="text/html", use_container_width=True)
+        st.caption("Cada gráfico da aba Dashboards também pode ser salvo como imagem pelo menu ⋯ que aparece ao passar o mouse.")
+
+    with aba_manutencao:
+        manutencao_admin()
+
+
+def manutencao_admin():
     with st.expander("Apagar todos os dados (fim do projeto)"):
         st.warning("Isso apaga todos os resultados, inclusive os históricos de todos os usuários. Não dá para desfazer.")
         confirmado = st.checkbox("Entendo e quero apagar todos os dados", key=f"confirma_{st.session_state.admin_nonce}")

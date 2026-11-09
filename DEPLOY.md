@@ -73,7 +73,7 @@ As tabelas são criadas sozinhas na primeira vez que o app abrir.
 - [ ] Em outra aba anônima, um código inventado **não** abre histórico nenhum.
 - [ ] **Consultoria** responde com a IA; um relato com CPF é bloqueado.
 - [ ] O endereço do site com `?admin` no final abre o **Painel de Administração**, que pede a senha
-      e mostra só médias (grupos com menos de 3 pessoas ficam ocultos).
+      e mostra os registros, os dashboards e os botões de exportação (Excel, CSV e HTML).
 - [ ] O botão **Privacidade e Termos** do menu mostra o seu e-mail de contato.
 - [ ] No navegador: F12 → *Application* → *Cookies*: anote os cookies que aparecem e confira se batem
       com a aba **Cookies** da política (a plataforma pode adicionar algum próprio).

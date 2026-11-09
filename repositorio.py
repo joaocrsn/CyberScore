@@ -6,8 +6,10 @@ Regras de isolamento, garantidas aqui e não na tela:
 - Todo dado pessoal só é lido ou apagado mediante o código, sempre filtrando pelo hash dele.
 - Todo diagnóstico é gravado para estatísticas, mas sem identificação: só quem escolhe o histórico
   tem o hash do código ligado aos resultados.
-- O painel de pesquisa só recebe médias, sem respostas individuais nem hashes, e esconde grupos
-  com menos de TAMANHO_MINIMO_GRUPO pessoas (evita identificar alguém por setor/área).
+- O Painel de Administração (restrito por senha) recebe os registros sem o hash: quem tem histórico
+  aparece só com um apelido sequencial (H1, H2...).
+- estatisticas_pesquisa() devolve só médias e esconde grupos com menos de TAMANHO_MINIMO_GRUPO
+  pessoas, para qualquer uso público dos resultados.
 
 Funciona com SQLite (no seu PC) e com Postgres (Supabase, em produção): basta trocar a URL.
 """
@@ -135,7 +137,32 @@ class Repositorio:
                 "por_area": por(avaliacoes.c.area),
             }
 
-    # ---------- Administração ----------
+    # ---------- Administração (Painel de Administração, protegido por senha) ----------
+
+    def registros(self):
+        """Todos os diagnósticos, um por linha, do mais antigo ao mais recente.
+
+        Nunca devolve o hash do código: quem guardou histórico recebe só um apelido sequencial
+        (H1, H2...), que permite ver avaliações da mesma pessoa sem expor nada que a identifique.
+        """
+        consulta = select(
+            avaliacoes.c.id, avaliacoes.c.usuario_hash, avaliacoes.c.setor, avaliacoes.c.area,
+            avaliacoes.c.score, avaliacoes.c.versao, avaliacoes.c.respostas, avaliacoes.c.criado_em,
+        ).order_by(avaliacoes.c.criado_em, avaliacoes.c.id)
+        with self._engine.connect() as conexao:
+            linhas = [dict(linha._mapping) for linha in conexao.execute(consulta)]
+        apelidos = {}
+        for linha in linhas:
+            usuario = linha.pop("usuario_hash")
+            if usuario:
+                apelidos.setdefault(usuario, f"H{len(apelidos) + 1}")
+            linha["historico"] = apelidos.get(usuario)
+            linha["respostas"] = json.loads(linha["respostas"])
+            data = linha["criado_em"]
+            if data.tzinfo is None:
+                data = data.replace(tzinfo=timezone.utc)
+            linha["criado_em"] = data.astimezone(FUSO_BRASILIA)
+        return linhas
 
     def apagar_tudo(self):
         with self._engine.begin() as conexao:

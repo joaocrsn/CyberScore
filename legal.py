@@ -65,7 +65,8 @@ momento pelo botão **Privacidade e Termos**, no menu lateral.
 - **Estatísticas e pesquisa acadêmica**: os resultados sem histórico são guardados **sem nenhum
   identificador** (não pedimos nome, e-mail, CPF ou telefone, e eles não são ligados a código nenhum),
   o que os torna dados anonimizados, fora do alcance da LGPD (art. 12). Mesmo assim, você é informado
-  antes de começar. Os resultados aparecem apenas em médias, e grupos com menos de 3 pessoas ficam ocultos.
+  antes de começar. Os registros, sem nenhum identificador, são consultados apenas pelo responsável pelo
+  projeto, em área restrita por senha, e divulgados somente de forma agregada (médias e gráficos).
   Se você também guardar no histórico, esse uso estatístico ocorre com base no seu consentimento (art. 7º, I).
 - **Análise da Consultoria por IA**: com base no seu **consentimento**, dado ao clicar em "Analisar Ameaça"
   depois de ler o aviso exibido na página.
@@ -110,8 +111,8 @@ Você também pode apresentar reclamação à **Autoridade Nacional de Proteçã
 
 ### 7. Segurança
 Adotamos medidas como conexão criptografada (HTTPS), armazenamento do código apenas em forma de hash,
-isolamento por código (cada pessoa só acessa os próprios dados), coleta mínima e exibição apenas de
-médias no painel de administração, restrito por senha. Nenhum sistema é 100% seguro; em caso de incidente que possa trazer
+isolamento por código (cada pessoa só acessa os próprios dados), coleta mínima e acesso aos registros
+da pesquisa restrito ao responsável, por senha. Nenhum sistema é 100% seguro; em caso de incidente que possa trazer
 risco relevante, comunicaremos os usuários e a ANPD, conforme o art. 48 da LGPD.
 
 ### 8. Crianças e adolescentes
