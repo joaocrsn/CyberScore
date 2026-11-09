@@ -375,18 +375,23 @@ st.markdown(
         /* ---------- Caixas (cartões) que separam as etapas ---------- */
         [class*="st-key-card_"] {
             background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
-            padding: 20px 22px 22px 22px; margin-bottom: 14px; gap: 12px;
+            padding: 22px 24px 24px 24px; margin-bottom: 14px; gap: 16px;
         }
-        .card-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 10px; }
+        .card-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
         .card-num { flex: 0 0 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
             font-family: var(--font-display); font-weight: 700; font-size: 15px; color: var(--bg); background: linear-gradient(135deg, #A78BFA, #22D3EE); }
         .card-title { font-family: var(--font-display) !important; font-weight: 600 !important; font-size: 18px !important;
             line-height: 1.3 !important; margin: 3px 0 2px 0 !important; padding: 0 !important; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .card-badge { font-family: var(--font-body); font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em; color: var(--purple-soft);
-            background: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139, 92, 246, 0.35); padding: 2px 9px; border-radius: 999px; }
-        .card-desc { color: var(--muted) !important; font-size: 14.5px; line-height: 1.5; margin: 0 !important; }
+        /* O Streamlit embrulha o texto do título num <span>: o alinhamento precisa valer para ele também */
+        .card-title > span[data-heading-text] { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .card-badge { display: inline-flex; align-items: center; line-height: 1.3; font-family: var(--font-body); font-size: 11.5px;
+            font-weight: 600; letter-spacing: 0.04em; color: var(--purple-soft);
+            background: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139, 92, 246, 0.35); padding: 2px 10px; border-radius: 999px; }
+        .card-desc { color: var(--muted) !important; font-size: 14.5px; line-height: 1.5; margin: 6px 0 0 0 !important; }
+        [class*="st-key-card_"] [data-testid="stRadio"] [role="radiogroup"] { gap: 10px; }
+        [class*="st-key-card_"] [data-testid="stCheckbox"] { margin-bottom: 4px; }
         .nota { display: flex; gap: 10px; background: rgba(34, 211, 238, 0.07); border: 1px solid rgba(34, 211, 238, 0.35);
-            border-radius: 12px; padding: 12px 14px; margin: 4px 0 8px 0; font-size: 14px; line-height: 1.5; color: var(--text); }
+            border-radius: 12px; padding: 14px 16px; margin: 6px 0 10px 0; font-size: 14px; line-height: 1.5; color: var(--text); }
         .nota b { color: var(--cyan); }
         .recursos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 4px 0 22px 0; }
         .acesso-topo { display: flex; justify-content: space-between; align-items: flex-end; gap: 32px; flex-wrap: wrap; }
