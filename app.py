@@ -80,7 +80,7 @@ LOGO_SVG = """
 st.markdown(
     """
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
 
         :root {
@@ -99,7 +99,9 @@ st.markdown(
             --red: #EF4444;
             --font-display: 'Space Grotesk', 'Inter', sans-serif;
             --font-body: 'Inter', system-ui, sans-serif;
-            --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+            /* Só duas famílias no site: Space Grotesk nos títulos e Inter em todo o resto.
+               Os rótulos pequenos (antes em fonte monoespaçada) agora usam a Inter. */
+            --font-mono: 'Inter', system-ui, sans-serif;
         }
 
 
@@ -123,7 +125,9 @@ st.markdown(
         }
         h1 { font-weight: 700 !important; }
         h3 { font-weight: 600 !important; line-height: 1.35 !important; }
-        [data-testid="stCaptionContainer"], .stApp small { color: var(--muted) !important; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.02em; }
+        [data-testid="stCaptionContainer"], .stApp small { color: var(--muted) !important; font-family: var(--font-body); font-size: 13px; line-height: 1.5; }
+        [data-testid="stCaptionContainer"] p { color: var(--muted) !important; }
+        .stApp [data-testid="stCheckbox"] p, .stApp [data-testid="stRadio"] p { font-size: 15px; line-height: 1.5; }
         .block-container { padding-top: 3.2rem; max-width: 760px; }
         hr { border-color: var(--border) !important; }
 
@@ -283,9 +287,9 @@ st.markdown(
             border-color: var(--purple) !important;
             box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25) !important;
         }
-        .stSelectbox label, .stTextArea label, .stTextInput label {
-            font-family: var(--font-mono) !important; font-size: 11.5px !important;
-            letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted) !important;
+        .stSelectbox label, .stTextArea label, .stTextInput label, .stSelectbox label p, .stTextArea label p, .stTextInput label p {
+            font-family: var(--font-body) !important; font-size: 14px !important; font-weight: 600 !important;
+            letter-spacing: 0; text-transform: none; color: var(--text) !important;
         }
 
 
@@ -360,6 +364,35 @@ st.markdown(
         .cartilha-fonte { color: var(--cyan); font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; }
         .codigo-card { background: rgba(34, 211, 238, 0.08); border: 1px solid var(--cyan); border-radius: 14px; padding: 16px 20px 6px 20px; margin-bottom: 8px; }
         .codigo-titulo { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--cyan); margin-bottom: 6px; }
+        /* ---------- Caixas (cartões) que separam as etapas ---------- */
+        [class*="st-key-card_"] {
+            background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+            padding: 20px 22px 22px 22px; margin-bottom: 14px; gap: 12px;
+        }
+        .card-head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 10px; }
+        .card-num { flex: 0 0 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-display); font-weight: 700; font-size: 15px; color: var(--bg); background: linear-gradient(135deg, #A78BFA, #22D3EE); }
+        .card-title { font-family: var(--font-display) !important; font-weight: 600 !important; font-size: 18px !important;
+            line-height: 1.3 !important; margin: 3px 0 2px 0 !important; padding: 0 !important; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .card-badge { font-family: var(--font-body); font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em; color: var(--purple-soft);
+            background: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139, 92, 246, 0.35); padding: 2px 9px; border-radius: 999px; }
+        .card-desc { color: var(--muted) !important; font-size: 14.5px; line-height: 1.5; margin: 0 !important; }
+        .nota { display: flex; gap: 10px; background: rgba(34, 211, 238, 0.07); border: 1px solid rgba(34, 211, 238, 0.35);
+            border-radius: 12px; padding: 12px 14px; margin: 4px 0 8px 0; font-size: 14px; line-height: 1.5; color: var(--text); }
+        .nota b { color: var(--cyan); }
+        .recursos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 4px 0 18px 0; }
+        .recurso { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
+        .recurso-icone { font-size: 22px; line-height: 1; margin-bottom: 8px; }
+        .recurso-titulo { font-family: var(--font-display); font-weight: 600; font-size: 16px; margin-bottom: 4px; color: var(--text); }
+        .recurso p { color: var(--muted) !important; font-size: 13.5px; line-height: 1.45; margin: 0; }
+        .marca-acesso { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+        /* Botão de destaque (ação principal) */
+        div.stButton > button[kind="primary"], [data-testid="stBaseButton-primary"] { justify-content: center !important; }
+        div.stButton > button[kind="primary"] p { text-align: center !important; font-weight: 600; }
+        /* Botões discretos da barra lateral */
+        [data-testid="stSidebar"] div.stButton > button { padding: 8px 12px; font-size: 13.5px; border-radius: 10px; box-shadow: none; }
+        [data-testid="stSidebar"] div.stButton > button:hover { transform: none; box-shadow: none; }
+
         .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
         /* ---------- Acessibilidade ---------- */
@@ -378,6 +411,7 @@ st.markdown(
             .score-card { flex-direction: column; text-align: center; padding: 24px 18px; }
             .page-title { font-size: 28px; }
             .q-text { font-size: 19px; }
+            .recursos { grid-template-columns: 1fr; }
         }
     </style>
     """,
@@ -406,6 +440,26 @@ def cabecalho_pagina(titulo, subtitulo=""):
 
 def titulo_secao(texto):
     st.markdown(f'<h2 class="section-title">{escape(texto)}</h2>', unsafe_allow_html=True)
+
+
+def cabecalho_cartao(numero, titulo, descricao="", selo=""):
+    """Topo de uma caixa: número da etapa, título, selo opcional e descrição curta."""
+    selo_html = f'<span class="card-badge">{escape(selo)}</span>' if selo else ""
+    desc_html = f'<p class="card-desc">{escape(descricao)}</p>' if descricao else ""
+    st.markdown(
+        f'<div class="card-head"><span class="card-num" aria-hidden="true">{escape(numero)}</span>'
+        f'<div><h2 class="card-title">{escape(titulo)}{selo_html}</h2>{desc_html}</div></div>',
+        unsafe_allow_html=True,
+    )
+
+
+def esconder_menu_lateral():
+    """Usado na tela de acesso e no painel de administração: sem menu até liberar o acesso."""
+    st.markdown(
+        "<style>[data-testid='stSidebar'], [data-testid='stExpandSidebarButton'], "
+        "[data-testid='collapsedControl'] { display: none !important; }</style>",
+        unsafe_allow_html=True,
+    )
 
 
 
@@ -811,9 +865,12 @@ VALORES_INICIAIS = {
 # Valem para a visita inteira: não são zerados ao fazer uma nova auditoria
 VALORES_DA_VISITA = {
     "codigo_usuario": None,  # código de acesso ao histórico (fica só na memória desta aba)
-    "tentativas_codigo": 0, "aviso_cookies_ok": False, "admin_nonce": 0,
+    "tentativas_codigo": 0, "admin_nonce": 0,
+    "acesso_liberado": False,  # aceite da tela de acesso (vale até fechar a aba)
+    "admin_ok": False, "tentativas_admin": 0,
 }
 MAX_TENTATIVAS_CODIGO = 5
+MAX_TENTATIVAS_ADMIN = 5
 
 
 def reiniciar_sessao(apenas_faltantes=False):
@@ -918,6 +975,42 @@ def exibir_analise_ia_do_diagnostico(score):
         st.info(st.session_state.dicas_diagnostico_ia)
 
 
+def explicar_calculo(respostas=None):
+    """Explica a fórmula do CyberScore. Com respostas, mostra também os pontos da própria pessoa."""
+    exemplo = PERGUNTAS[0]
+    texto_ex, fator_ex = exemplo["opcoes"][1]
+    pesos = [p["peso"] for p in PERGUNTAS]
+    st.markdown(
+        f"**1. Cada situação vale pontos conforme o risco.** As {len(PERGUNTAS)} situações somam "
+        f"**{PONTUACAO_MAXIMA} pontos**. Golpes mais comuns e que causam mais prejuízo valem mais "
+        f"(de {min(pesos)} a {max(pesos)} pontos cada).\n\n"
+        "**2. Cada resposta vale uma parte desses pontos.** A atitude mais segura vale **100%**; atitudes "
+        "parcialmente seguras valem **75%, 50% ou 25%**; a atitude de risco vale **0%**.\n\n"
+        f"**3. O CyberScore é a soma de tudo**, numa escala de 0 a 1000: "
+        f"*CyberScore = soma dos pontos ÷ {PONTUACAO_MAXIMA} × 1000*.\n\n"
+        f"**Exemplo:** a situação do código recebido por SMS vale {exemplo['peso']} pontos. Quem responde "
+        f"“{texto_ex}” ganha {fator_ex:.0%} deles, ou seja, {round(exemplo['peso'] * fator_ex)} pontos."
+    )
+    obtidos = {b: 0 for b in BLOCOS}
+    for r in respostas or []:
+        obtidos[PERGUNTAS[r["indice_pergunta"]]["bloco"]] += r["pontos"]
+    linhas = []
+    for b in BLOCOS:
+        do_bloco = [p for p in PERGUNTAS if p["bloco"] == b]
+        linha = {"Área": b, "Situações": len(do_bloco), "Pontos possíveis": sum(p["peso"] for p in do_bloco)}
+        if respostas:
+            linha["Seus pontos"] = obtidos[b]
+        linhas.append(linha)
+    total = {"Área": "Total", "Situações": len(PERGUNTAS), "Pontos possíveis": PONTUACAO_MAXIMA}
+    if respostas:
+        total["Seus pontos"] = sum(obtidos.values())
+    st.dataframe(pd.DataFrame(linhas + [total]), hide_index=True, use_container_width=True)
+    st.markdown(
+        "**Faixas de resultado:** de 0 a 399 = **Risco Crítico** · de 400 a 699 = **Alerta/Atenção** · "
+        "de 700 a 1000 = **Postura Segura**."
+    )
+
+
 def painel_blocos(respostas):
     linhas = ""
     for bloco, proporcao in score_por_bloco(respostas).items():
@@ -1017,34 +1110,37 @@ def pagina_diagnostico():
         )
         st.info("Você não precisa se identificar: não pedimos nome, e-mail, CPF nem telefone.", icon="🔒")
 
-        st.markdown("**Perfil (opcional)**: ajuda a comparar resultados por grupo na pesquisa.")
-        setor = st.selectbox("Setor de atuação (opcional)", options=SETORES, index=None, key="setor_box", placeholder="Prefiro não informar")
-        area = st.selectbox("Área (opcional)", options=AREAS, index=None, key="area_box", placeholder="Prefiro não informar")
+        with st.container(key="card_perfil"):
+            cabecalho_cartao("1", "Seu perfil", "Ajuda a comparar resultados por grupo na pesquisa.", selo="opcional")
+            col_setor, col_area = st.columns(2)
+            setor = col_setor.selectbox("Setor de atuação", options=SETORES, index=None, key="setor_box", placeholder="Prefiro não informar")
+            area = col_area.selectbox("Área", options=AREAS, index=None, key="area_box", placeholder="Prefiro não informar")
 
         codigo_atual = st.session_state.codigo_usuario
         opcao_historico = (
             f"Guardar no histórico do código {mascarar_codigo(codigo_atual)}" if codigo_atual
             else "Guardar no meu histórico, com um código de acesso anônimo"
         )
-        guardar = st.radio(
-            "O que fazer com o seu resultado?",
-            ["Só ver o resultado agora, sem guardar", opcao_historico],
-            index=1 if codigo_atual else 0,
-        ) == opcao_historico
-        st.caption(
-            "📊 Todas as respostas são guardadas **de forma anônima** (sem nome, e-mail ou código) para estatísticas "
-            "e para a pesquisa acadêmica do projeto. Só quem escolhe o histórico consegue rever os próprios resultados."
-        )
-        aceite = st.checkbox(
-            "Li a Política de Privacidade e os Termos de Uso, estou ciente de que minhas respostas são guardadas "
-            "de forma anônima e tenho 18 anos ou mais."
-        )
-        with st.expander("Ler o resumo da Política de Privacidade"):
-            st.markdown(legal.RESUMO_PRIVACIDADE)
-            st.caption("O texto completo está em **Privacidade e Termos**, no menu lateral.")
+        with st.container(key="card_resultado"):
+            cabecalho_cartao("2", "O que fazer com o seu resultado", "Com o histórico, você acompanha sua evolução ao refazer o teste.")
+            guardar = st.radio(
+                "O que fazer com o seu resultado?",
+                ["Só ver o resultado agora, sem guardar", opcao_historico],
+                index=1 if codigo_atual else 0, label_visibility="collapsed",
+            ) == opcao_historico
+            st.markdown(
+                '<div class="nota"><span aria-hidden="true">📊</span><span>Todas as respostas são guardadas '
+                '<b>de forma anônima</b> (sem nome, e-mail ou código) para a pesquisa acadêmica do projeto. '
+                'Só quem escolhe o histórico consegue rever os próprios resultados.</span></div>',
+                unsafe_allow_html=True,
+            )
 
-        st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("Iniciar Auditoria", disabled=not aceite, use_container_width=True):
+        with st.container(key="card_calculo"):
+            cabecalho_cartao("3", "Como o resultado é calculado", "Entenda de onde vem a nota de 0 a 1000 antes de começar.")
+            with st.expander("Ver a explicação do cálculo"):
+                explicar_calculo()
+
+        if st.button("Começar o diagnóstico", type="primary", use_container_width=True):
             st.session_state.setor_usuario = setor or ""
             st.session_state.area_usuario = area or ""
             st.session_state.guardar_historico = guardar
@@ -1090,6 +1186,8 @@ def pagina_diagnostico():
 
         titulo_secao("Desempenho por área")
         painel_blocos(respostas)
+        with st.expander(f"Como o seu CyberScore de {score_1000} foi calculado"):
+            explicar_calculo(respostas)
 
         titulo_secao("Onde você está exposto")
         exibir_armadilhas()
@@ -1333,8 +1431,7 @@ def pagina_historico():
             st.rerun()
 
 
-def pagina_legal():
-    cabecalho_pagina("Privacidade e Termos", f"Última atualização: {legal.DATA_ATUALIZACAO}.")
+def textos_legais():
     aba_privacidade, aba_termos, aba_cookies = st.tabs(["Política de Privacidade", "Termos de Uso", "Cookies"])
     with aba_privacidade:
         st.markdown(legal.POLITICA_PRIVACIDADE)
@@ -1342,6 +1439,61 @@ def pagina_legal():
         st.markdown(legal.TERMOS_USO)
     with aba_cookies:
         st.markdown(legal.POLITICA_COOKIES)
+
+
+@st.dialog("Privacidade e Termos", width="large")
+def dialogo_legal():
+    """Releitura dos textos a qualquer momento (transparência, art. 9º da LGPD)."""
+    st.caption(f"Última atualização: {legal.DATA_ATUALIZACAO}.")
+    textos_legais()
+
+
+RECURSOS = [
+    ("🛡️", "Diagnóstico de Risco", "15 situações do dia a dia mostram onde você está exposto a golpes."),
+    ("🚨", "Consultoria de Incidentes", "Caiu num golpe? Passo a passo e cartilhas oficiais para agir rápido."),
+    ("📈", "Meu Histórico", "Com um código anônimo, acompanhe sua evolução ao refazer o teste."),
+]
+
+
+def tela_acesso():
+    """Primeira tela: o visitante só usa o site depois de ler e aceitar os termos."""
+    esconder_menu_lateral()
+    st.markdown(
+        f'<div class="marca-acesso">{LOGO_SVG}<div><div class="brand-name">Cyber<em>Score</em></div>'
+        '<div class="brand-tag">Central de Segurança</div></div></div>',
+        unsafe_allow_html=True,
+    )
+    cabecalho_pagina(
+        "Bem-vindo ao CyberScore",
+        "Descubra em poucos minutos se os seus hábitos digitais protegem você ou te deixam exposto a golpes.",
+    )
+    cards = "".join(
+        f'<div class="recurso"><div class="recurso-icone" aria-hidden="true">{icone}</div>'
+        f'<div class="recurso-titulo">{escape(titulo)}</div><p>{escape(texto)}</p></div>'
+        for icone, titulo, texto in RECURSOS
+    )
+    st.markdown(f'<div class="recursos">{cards}</div>', unsafe_allow_html=True)
+
+    with st.container(key="card_acesso"):
+        cabecalho_cartao("✓", "Antes de entrar", "Veja como tratamos os seus dados. É rápido.")
+        st.markdown(legal.RESUMO_PRIVACIDADE)
+        st.markdown(f'<div class="nota">{legal.AVISO_COOKIES_HTML}</div>', unsafe_allow_html=True)
+        with st.expander("Ler a Política de Privacidade, os Termos de Uso e a Política de Cookies completos"):
+            st.caption(f"Última atualização: {legal.DATA_ATUALIZACAO}.")
+            textos_legais()
+
+    with st.container(key="card_aceite"):
+        cabecalho_cartao("!", "Seu aceite", "Marque as duas opções para usar o site.")
+        aceite_termos = st.checkbox("Li e aceito a Política de Privacidade e os Termos de Uso.")
+        aceite_idade = st.checkbox(
+            "Tenho 18 anos ou mais e estou ciente de que as respostas do diagnóstico são guardadas "
+            "de forma anônima para a pesquisa acadêmica."
+        )
+    if st.button("Aceitar e entrar", type="primary", disabled=not (aceite_termos and aceite_idade),
+                 use_container_width=True):
+        st.session_state.acesso_liberado = True
+        st.rerun()
+    st.caption("Se não concordar, basta fechar esta página. Nada é gravado antes do aceite.")
 
 
 def grafico_medias(grupos, rotulo, cor):
@@ -1354,11 +1506,49 @@ def grafico_medias(grupos, rotulo, cor):
         st.dataframe(tabela.round({"Média": 0}), hide_index=True, use_container_width=True)
 
 
-def pagina_dashboard():
-    cabecalho_pagina(
-        "Painel da Pesquisa",
-        "Médias anônimas de todos os diagnósticos realizados. "
-        f"Grupos com menos de {TAMANHO_MINIMO_GRUPO} pessoas ficam ocultos para ninguém ser identificado.",
+def voltar_ao_site():
+    st.session_state.admin_ok = False
+    st.query_params.clear()
+    st.rerun()
+
+
+def pagina_admin():
+    """Painel de Administração: fora do menu, aberto só pelo endereço do site com ?admin no final."""
+    esconder_menu_lateral()
+    cabecalho_pagina("Painel de Administração", "Área restrita ao responsável pelo projeto.")
+    if not SENHA_ADMIN:
+        st.info("A área administrativa está desativada neste ambiente.")
+        if st.button("Voltar ao site"):
+            voltar_ao_site()
+        return
+
+    if not st.session_state.admin_ok:
+        if st.session_state.tentativas_admin >= MAX_TENTATIVAS_ADMIN:
+            st.error("Muitas tentativas com senha incorreta. Feche esta aba e tente mais tarde.")
+            return
+        with st.form("entrar_admin"):
+            senha = st.text_input("Senha de administrador", type="password")
+            entrar = st.form_submit_button("Entrar")
+        if entrar:
+            if hmac.compare_digest(senha.encode(), SENHA_ADMIN.encode()):
+                st.session_state.admin_ok = True
+                st.session_state.tentativas_admin = 0
+                st.rerun()
+            st.session_state.tentativas_admin += 1
+            st.error("Senha incorreta.")
+        if st.button("Voltar ao site"):
+            voltar_ao_site()
+        return
+
+    c1, c2 = st.columns([3, 1])
+    c1.markdown("Conectado como **administrador**.")
+    if c2.button("Sair", use_container_width=True):
+        voltar_ao_site()
+
+    titulo_secao("Resultados da pesquisa")
+    st.caption(
+        "Médias anônimas de todos os diagnósticos. Grupos com menos de "
+        f"{TAMANHO_MINIMO_GRUPO} pessoas ficam ocultos para ninguém ser identificado."
     )
     try:
         estatisticas = repo.estatisticas_pesquisa(VERSAO_QUESTIONARIO)
@@ -1378,27 +1568,15 @@ def pagina_dashboard():
 
 
     st.divider()
-    if not SENHA_ADMIN:
-        return  # sem SENHA_ADMIN configurada, a área administrativa fica desativada
+    titulo_secao("Manutenção")
     if st.session_state.pop("banco_limpo", False):
         st.success("Banco de dados apagado.")
-
-    with st.expander("Área administrativa"):
-        senha = st.text_input(
-            "Senha de administrador", type="password", key=f"senha_{st.session_state.admin_nonce}",
-            placeholder="Digite e pressione Enter",
-        )
-        if not senha:
-            return
-        if not hmac.compare_digest(senha.encode(), SENHA_ADMIN.encode()):
-            st.error("Senha incorreta.")
-            return
-
+    with st.expander("Apagar todos os dados (fim do projeto)"):
         st.warning("Isso apaga todos os resultados, inclusive os históricos de todos os usuários. Não dá para desfazer.")
         confirmado = st.checkbox("Entendo e quero apagar todos os dados", key=f"confirma_{st.session_state.admin_nonce}")
         if st.button("Purgar Banco de Dados", disabled=not confirmado):
             repo.apagar_tudo()
-            st.session_state.admin_nonce += 1  # limpa os campos de senha e confirmação
+            st.session_state.admin_nonce += 1  # desmarca a confirmação
             st.session_state.banco_limpo = True
             st.rerun()
 
@@ -1408,6 +1586,20 @@ def pagina_dashboard():
 # ============================================================
 # NAVEGAÇÃO
 # ============================================================
+
+# O Streamlit marca a página como inglês; leitores de tela precisam saber que é português
+st.iframe("<script>window.parent.document.documentElement.lang = 'pt-BR';</script>", height=1)
+
+# Painel de Administração: não aparece no menu. Abre só com "?admin" no fim do endereço do site.
+if "admin" in st.query_params:
+    pagina_admin()
+    st.stop()
+
+# Tela de acesso: nenhum módulo é exibido antes do aceite dos termos
+if not st.session_state.acesso_liberado:
+    tela_acesso()
+    st.stop()
+
 st.sidebar.markdown(
     html(f"""
     <div class="brand">
@@ -1425,23 +1617,13 @@ PAGINAS = {
     "Diagnóstico de Risco": pagina_diagnostico,
     "Consultoria de Incidentes": pagina_consultoria,
     "Meu Histórico": pagina_historico,
-    "Painel da Pesquisa": pagina_dashboard,
-    "Privacidade e Termos": pagina_legal,
 }
 pagina = st.sidebar.radio("Módulos", list(PAGINAS), label_visibility="collapsed")
 st.sidebar.caption(
     "🔒 Nunca digite senhas, CPF, dados de cartão ou informações de outras pessoas neste site. "
     "Projeto acadêmico, sem fins lucrativos."
 )
-
-# O Streamlit marca a página como inglês; leitores de tela precisam saber que é português
-st.iframe("<script>window.parent.document.documentElement.lang = 'pt-BR';</script>", height=1)
-
-if not st.session_state.aviso_cookies_ok:
-    with st.container(border=True):
-        st.markdown(legal.AVISO_COOKIES)
-        if st.button("Entendi", key="ok_cookies"):
-            st.session_state.aviso_cookies_ok = True
-            st.rerun()
+if st.sidebar.button("📄 Privacidade e Termos", key="abrir_legal", use_container_width=True):
+    dialogo_legal()
 
 PAGINAS[pagina]()
