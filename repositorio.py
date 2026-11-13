@@ -64,6 +64,26 @@ class Repositorio:
         self._pimenta = pimenta.encode()
         self._engine = create_engine(url_banco, pool_pre_ping=True)
         metadados.create_all(self._engine)
+        if self._engine.dialect.name == "postgresql":
+            self._fechar_api_publica()
+
+    def _fechar_api_publica(self):
+        """No Supabase, toda tabela do esquema public também fica exposta pela API REST automática.
+
+        O app não usa essa API (conecta direto ao Postgres como dono da tabela, que não é afetado pelo RLS).
+        Ligar o Row-Level Security sem nenhuma política e retirar as permissões dos papéis públicos
+        (anon e authenticated) fecha essa porta: ninguém lê nem altera dados pela URL do projeto.
+        """
+        comandos = [
+            "ALTER TABLE public.avaliacoes ENABLE ROW LEVEL SECURITY",
+            "REVOKE ALL ON TABLE public.avaliacoes FROM anon, authenticated",
+        ]
+        for comando in comandos:
+            try:
+                with self._engine.begin() as conexao:
+                    conexao.exec_driver_sql(comando)
+            except Exception as erro:  # ex.: Postgres fora do Supabase, sem os papéis anon/authenticated
+                print(f"[banco] proteção não aplicada ({comando}): {erro}")
 
     def _hash(self, codigo):
         codigo = normalizar_codigo(codigo or "")
