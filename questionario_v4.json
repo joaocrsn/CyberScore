@@ -1,0 +1,1195 @@
+{
+ "versao": 4,
+ "nucleo": [
+  {
+   "id": "N01",
+   "tema": "confirmar pedido urgente de conhecido",
+   "bloco": "mensagens e identidade",
+   "peso": 105,
+   "pergunta": "Um amigo, parente ou colega escreve de um número novo: \"troquei de celular, salva aí\". Logo depois pede um Pix urgente de R$ 480. A foto é dele e o jeito de escrever também. O que você faz?",
+   "opcoes": [
+    {
+     "texto": "Faço o Pix: a foto e o jeito de escrever são dele.",
+     "fator": 0
+    },
+    {
+     "texto": "Peço um áudio e só faço se a voz for mesmo dele.",
+     "fator": 0.25
+    },
+    {
+     "texto": "Pergunto algo que só ele saberia, tipo o nome do cachorro.",
+     "fator": 0.5
+    },
+    {
+     "texto": "Ligo para o número antigo dele.",
+     "fator": 1
+    }
+   ],
+   "armadilha": "Foto e jeito de escrever se copiam em minutos, e a voz hoje é clonada por IA com poucos segundos de áudio tirados de vídeos e stories. A resposta \"que só ele sabe\" muitas vezes está nas redes sociais. O que funciona é sair dessa conversa e falar com a pessoa por um canal que você já tinha.",
+   "dica": "Ligue para o número antigo ou faça uma chamada de vídeo. Combine com a família uma palavra-senha para emergências.",
+   "cartilhas": [
+    "golpes",
+    "fraudes"
+   ],
+   "categoria_oficial": "CERT.br — Fraude (tentativas de fraude; associação com o cenário). Fonte: https://stats.cert.br/incidentes/",
+   "justificativa": "Mede a confiança na aparência da mensagem e em verificações que parecem seguras (áudio, pergunta pessoal), mas que a IA e as redes sociais derrubam."
+  },
+  {
+   "id": "N02",
+   "tema": "repassar código recebido por sms",
+   "bloco": "mensagens e identidade",
+   "peso": 95,
+   "pergunta": "Chega um SMS com um código de 6 dígitos que você não pediu. Em seguida, alguém do grupo do condomínio ou do trabalho diz que digitou seu número por engano e pede: \"me manda o código, por favor?\". O que você faz?",
+   "opcoes": [
+    {
+     "texto": "Mando: o código é da conta dele, não da minha.",
+     "fator": 0
+    },
+    {
+     "texto": "Ligo para a pessoa e, se ela confirmar, eu mando.",
+     "fator": 0.25
+    },
+    {
+     "texto": "Mando só um print do SMS, sem digitar o código.",
+     "fator": 0
+    },
+    {
+     "texto": "Não mando para ninguém.",
+     "fator": 1
+    }
+   ],
+   "armadilha": "Se o código chegou no SEU número, ele libera alguma conta SUA (WhatsApp, banco, e-mail) em outro aparelho. Mandar print é a mesma coisa que repassar. E confirmar com a pessoa não ajuda: a conta dela pode ter sido invadida, e quem confirma é o golpista.",
+   "dica": "Nunca repasse códigos, nem por print. Ative a confirmação em duas etapas do WhatsApp em Configurações > Conta > Confirmação em duas etapas.",
+   "cartilhas": [
+    "autenticacao",
+    "golpes"
+   ],
+   "categoria_oficial": "CERT.br — Invasão (acesso não autorizado; associação preventiva). Fonte: https://stats.cert.br/incidentes/",
+   "justificativa": "Avalia se a pessoa entende que um código recebido é uma chave de acesso, incluindo a pegadinha do print."
+  },
+  {
+   "id": "N03",
+   "tema": "pagar taxa por link de mensagem",
+   "bloco": "mensagens e identidade",
+   "peso": 95,
+   "pergunta": "Chega um SMS: \"Sua encomenda está retida. Pague a taxa de R$ 4,90 para liberar a entrega\". Você está mesmo esperando uma compra. O que você faz?",
+   "opcoes": [
+    {
+     "texto": "Pago: é pouco dinheiro e estou esperando a encomenda.",
+     "fator": 0
+    },
+    {
+     "texto": "Abro o link e só pago se o site tiver o cadeado.",
+     "fator": 0.25
+    },
+    {
+     "texto": "Pago com o cartão virtual, que é descartável, então não tem risco.",
+     "fator": 0.25
+    },
+    {
+     "texto": "Vejo o rastreio no app da loja, sem tocar no link.",
+     "fator": 1
+    }
+   ],
+   "armadilha": "Golpistas mandam milhares dessas mensagens: sempre tem alguém esperando uma entrega. O cadeado só mostra que a conexão é criptografada; site falso também tem. O cartão virtual limita o prejuízo daquela compra, mas você ainda entrega nome, CPF e dados do cartão ao golpista.",
+   "dica": "Consulte a entrega digitando você mesmo o endereço da loja ou da transportadora, ou pelo app oficial. Desconfie de qualquer taxa cobrada por link em mensagem.",
+   "cartilhas": [
+    "golpes",
+    "comercio"
+   ],
+   "categoria_oficial": "CERT.br — Fraude > Phishing (páginas falsas). Fonte: https://stats.cert.br/incidentes/",
+   "justificativa": "Mede a suscetibilidade a páginas falsas quando a mensagem combina com algo real, com duas pegadinhas comuns: o cadeado e o cartão virtual."
+  },
+  {
+   "id": "N04",
+   "tema": "falsa central que pede instalar app",
+   "bloco": "mensagens e identidade",
+   "peso": 95,
+   "pergunta": "Te ligam: \"Aqui é da central de segurança do seu banco, identificamos uma compra suspeita\". A pessoa sabe seu nome, CPF e o final do cartão, e pede que você instale um app para \"proteger a conta\". O que você faz?",
+   "opcoes": [
+    {
+     "texto": "Instalo: se sabem meu CPF e o cartão, é o banco mesmo.",
+     "fator": 0
+    },
+    {
+     "texto": "Peço o número de protocolo antes de instalar qualquer coisa.",
+     "fator": 0.25
+    },
+    {
+     "texto": "Desligo e ligo de volta para o número que apareceu na tela.",
+     "fator": 0.25
+    },
+    {
+     "texto": "Desligo e ligo para o número que está atrás do cartão.",
+     "fator": 1
+    }
+   ],
+   "armadilha": "Nome, CPF e final do cartão circulam em vazamentos, então conhecê-los não prova nada, e protocolo se inventa na hora. O número que aparece na tela pode ser falsificado. O app \"de proteção\" é de acesso remoto: com ele, o golpista vê e controla seu celular, inclusive o app do banco.",
+   "dica": "Banco não pede para instalar aplicativo por telefone. Desligue e ligue você mesmo para o número oficial, de preferência de outro telefone.",
+   "cartilhas": [
+    "fraudes",
+    "banco",
+    "febraban"
+   ],
+   "categoria_oficial": "CERT.br — Fraude (tentativas de fraude; associação com o cenário). Fonte: https://stats.cert.br/incidentes/",
+   "justificativa": "Avalia a confiança em dados conhecidos pelo golpista e a diferença sutil entre retornar para o número da tela e ligar para o número oficial."
+  },
+  {
+   "id": "N05",
+   "tema": "senha forte, mas repetida",
+   "bloco": "contas e acessos",
+   "peso": 110,
+   "pergunta": "Você tem conta no e-mail, no banco, nas redes sociais e em sistemas do estudo ou do trabalho. Como estão suas senhas?",
+   "opcoes": [
+    {
+     "texto": "Uma senha bem forte, com símbolos e números, nas contas importantes.",
+     "fator": 0
+    },
+    {
+     "texto": "A mesma base com um final diferente em cada site (ex.: Maria@1990insta).",
+     "fator": 0.25
+    },
+    {
+     "texto": "Uma diferente em cada conta, anotadas num caderno guardado em casa.",
+     "fator": 0.75
+    },
+    {
+     "texto": "Cada conta tem a sua, guardada num gerenciador de senhas.",
+     "fator": 1
+    }
+   ],
+   "armadilha": "Força não adianta se a senha se repete: quando um site vaza, testam a mesma senha no seu e-mail e no seu banco. A \"base com final diferente\" é um dos primeiros padrões que os programas de ataque testam. O caderno em casa é razoável, desde que fique longe de outras pessoas e não vá parar numa foto no celular.",
+   "dica": "Comece pelo e-mail, que recupera todas as outras contas: senha única e longa. Um gerenciador de senhas, inclusive o do próprio navegador ou celular, cria e guarda senhas diferentes para você.",
+   "cartilhas": [
+    "autenticacao",
+    "vazamento"
+   ],
+   "categoria_oficial": "CERT.br — Invasão (acesso não autorizado; associação preventiva). Fonte: https://stats.cert.br/incidentes/",
+   "justificativa": "Mede a reutilização de senhas, a prática mais comum de \"falsa segurança\": achar que uma senha forte compensa a repetição."
+  },
+  {
+   "id": "N06",
+   "tema": "verificação em duas etapas no e-mail",
+   "bloco": "contas e acessos",
+   "peso": 100,
+   "pergunta": "Pense no seu e-mail principal, que é por onde você recupera quase todas as outras contas. Como você entra nele num aparelho novo?",
+   "opcoes": [
+    {
+     "texto": "Só com a senha. Ela é forte e só eu sei.",
+     "fator": 0
+    },
+    {
+     "texto": "Com a senha, que eu troco a cada três meses para garantir.",
+     "fator": 0.25
+    },
+    {
+     "texto": "Senha e um código que chega por SMS.",
+     "fator": 0.75
+    },
+    {
+     "texto": "Senha e aprovação num app autenticador.",
+     "fator": 1
+    }
+   ],
+   "armadilha": "Senha forte vaza do mesmo jeito, por página falsa ou vazamento de outro site. Trocar de tempos em tempos não ajuda se ela foi roubada hoje. O SMS é bem melhor que nada, mas o código pode ser obtido por golpe ou por clonagem do chip.",
+   "dica": "Ative a verificação em duas etapas no e-mail e, quando houver opção, use app autenticador ou chave de acesso (passkey). Nunca aprove um login que você não fez.",
+   "cartilhas": [
+    "autenticacao"
+   ],
+   "categoria_oficial": "CERT.br — Invasão (acesso não autorizado; associação preventiva). Fonte: https://stats.cert.br/incidentes/",
+   "justificativa": "Separa a adoção da segunda etapa da troca periódica de senha, hábito que muita gente acha que protege."
+  },
+  {
+   "id": "N07",
+   "tema": "conferir quem recebe o pagamento",
+   "bloco": "pagamentos",
+   "peso": 105,
+   "pergunta": "Chega pelo WhatsApp o boleto da escola, do condomínio ou de um fornecedor, igual ao do mês passado: mesmo valor, mesma data, mesmo remetente. Antes de pagar, o que você confere?",
+   "opcoes": [
+    {
+     "texto": "Nada demais: valor e vencimento estão certinhos.",
+     "fator": 0
+    },
+    {
+     "texto": "Se veio do número de sempre, pago tranquilo.",
+     "fator": 0.25
+    },
+    {
+     "texto": "Se o código de barras começa com o número do banco de sempre.",
+     "fator": 0.25
+    },
+    {
+     "texto": "Leio no app do banco o nome de quem vai receber.",
+     "fator": 1
+    }
+   ],
+   "armadilha": "Golpistas alteram boletos e QR Codes mantendo valor, data e aparência; só muda quem recebe. Um número conhecido pode ter sido invadido. E o início do código de barras só diz qual banco emitiu o boleto, não se o beneficiário é a escola: golpistas também abrem contas em bancos conhecidos.",
+   "dica": "Antes de confirmar, leia o nome do beneficiário na tela do banco. Se estiver diferente do esperado, pare e confirme por um telefone que você já tinha.",
+   "cartilhas": [
+    "fraudes",
+    "banco",
+    "febraban"
+   ],
+   "categoria_oficial": "CERT.br — Fraude (tentativas de fraude; associação com o cenário). Fonte: https://stats.cert.br/incidentes/",
+   "justificativa": "Mede a conferência do destino do dinheiro, com a pegadinha do código do banco, que muita gente usa como prova de autenticidade."
+  },
+  {
+   "id": "N08",
+   "tema": "permissões perigosas em app da loja oficial",
+   "bloco": "dispositivos e aplicativos",
+   "peso": 70,
+   "pergunta": "Você baixa na loja oficial um app de lanterna com nota 4,8. Ele pede acesso aos contatos, ao microfone e à \"acessibilidade\". O que você faz?",
+   "opcoes": [
+    {
+     "texto": "Permito: está na loja oficial e tem nota alta.",
+     "fator": 0
+    },
+    {
+     "texto": "Permito só \"durante o uso do app\", aí fica seguro.",
+     "fator": 0.25
+    },
+    {
+     "texto": "Permito e depois passo um antivírus para garantir.",
+     "fator": 0.25
+    },
+    {
+     "texto": "Nego. Lanterna não precisa disso; se insistir, desinstalo.",
+     "fator": 1
+    }
+   ],
+   "armadilha": "Apps maliciosos já passaram pelas lojas oficiais, e notas podem ser compradas. \"Durante o uso\" reduz, mas o app ainda pega o que não precisa enquanto está aberto. A permissão de acessibilidade é a mais perigosa: deixa o app ler a tela e tocar por você, e é usada em golpes bancários. Antivírus não desfaz uma permissão que você mesmo deu.",
+   "dica": "Pergunte se a permissão faz sentido para a função do app. Nunca libere acessibilidade para um app que não seja de acessibilidade, e revise as permissões em Configurações de vez em quando.",
+   "cartilhas": [
+    "celulares",
+    "malware"
+   ],
+   "categoria_oficial": "CERT.br — Fraude > Malware (códigos maliciosos para furtar informações; associação preventiva). Fonte: https://stats.cert.br/incidentes/",
+   "justificativa": "Mede a confiança exagerada em lojas, notas e antivírus, com foco na permissão de acessibilidade."
+  },
+  {
+   "id": "N09",
+   "tema": "dados reais em ia gratuita",
+   "bloco": "dados e continuidade",
+   "peso": 90,
+   "pergunta": "Você quer que uma IA gratuita resuma um documento: um contrato, uma planilha de clientes, um laudo médico ou uma conversa com dados de alguém. Como faz?",
+   "opcoes": [
+    {
+     "texto": "Colo tudo: a IA só vai ler para resumir, não guarda nada.",
+     "fator": 0
+    },
+    {
+     "texto": "Uso a aba anônima do navegador, aí não fica registrado.",
+     "fator": 0
+    },
+    {
+     "texto": "Tiro os nomes e deixo o resto: valores, datas, endereço.",
+     "fator": 0.25
+    },
+    {
+     "texto": "Troco por dados inventados ou uso só a estrutura do texto.",
+     "fator": 1
+    }
+   ],
+   "armadilha": "Muitas IAs gratuitas podem guardar e usar o que você digita para melhorar o serviço, dependendo das configurações. A aba anônima só deixa de salvar o histórico no SEU navegador; o serviço recebe tudo igual. Tirar só os nomes não basta: endereço, valores e datas juntos ainda identificam a pessoa.",
+   "dica": "Use dados fictícios ou um texto realmente sem informações pessoais e sigilosas. No trabalho, use só as ferramentas de IA liberadas pela organização.",
+   "cartilhas": [
+    "ia",
+    "protecao_dados"
+   ],
+   "categoria_oficial": "ANPD — confidencialidade / divulgação ou acesso não autorizado (tipo de impacto potencial; não é categoria estatística). Fonte: https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis",
+   "justificativa": "Mede a falsa sensação de anonimato ao usar IA, com a pegadinha da aba anônima, e vale para a vida pessoal e o trabalho."
+  },
+  {
+   "id": "N10",
+   "tema": "cópia de segurança de fotos e arquivos",
+   "bloco": "dados e continuidade",
+   "peso": 70,
+   "pergunta": "Pense nas suas fotos, documentos e arquivos importantes, pessoais ou do trabalho. Se seu celular ou computador sumisse hoje, como ficaria?",
+   "opcoes": [
+    {
+     "texto": "Perderia tudo: está tudo só no aparelho.",
+     "fator": 0
+    },
+    {
+     "texto": "Tranquilo, está tudo sincronizado na nuvem da mesma conta.",
+     "fator": 0.25
+    },
+    {
+     "texto": "Tenho tudo num HD externo, que fica sempre ligado no computador.",
+     "fator": 0.5
+    },
+    {
+     "texto": "Tenho uma cópia separada e já testei se os arquivos abrem.",
+     "fator": 1
+    }
+   ],
+   "armadilha": "Sincronizar não é backup: se você, ou um golpista com a sua conta, apagar um arquivo, ele some de todo lugar. Um HD sempre conectado é atingido junto por vírus que sequestram dados. E uma cópia nunca testada costuma falhar justamente quando você precisa.",
+   "dica": "Mantenha uma cópia separada (outra nuvem ou um HD desconectado depois de usar) e teste de vez em quando se consegue restaurar os arquivos.",
+   "cartilhas": [
+    "backup"
+   ],
+   "categoria_oficial": "ANPD — disponibilidade / perda de dados pessoais (tipo de impacto potencial; não é categoria estatística). Fonte: https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis",
+   "justificativa": "Mede o preparo para perda de dados e duas crenças comuns: sincronizar é backup e HD externo sempre ligado é seguro."
+  },
+  {
+   "id": "N11",
+   "tema": "adiar atualizações do sistema",
+   "bloco": "dispositivos e aplicativos",
+   "peso": 65,
+   "pergunta": "Aparece a notificação \"Atualização do sistema disponível\" no celular ou no computador. O que você costuma fazer?",
+   "opcoes": [
+    {
+     "texto": "Adio: está tudo funcionando e atualização às vezes deixa lento.",
+     "fator": 0
+    },
+    {
+     "texto": "Atualizo só os apps; o sistema eu deixo para depois.",
+     "fator": 0.25
+    },
+    {
+     "texto": "Atualizo no fim de semana, quando não vou precisar do aparelho.",
+     "fator": 0.75
+    },
+    {
+     "texto": "Atualizo assim que posso, de preferência no automático.",
+     "fator": 1
+    }
+   ],
+   "armadilha": "Atualizações corrigem falhas que muitas vezes já estão sendo exploradas, e \"estar funcionando\" não mostra se o aparelho está vulnerável. Atualizar só os apps deixa abertas as falhas do próprio sistema. Esperar alguns dias é aceitável; esperar meses, não.",
+   "dica": "Ative a atualização automática do sistema e dos apps. Atualize sempre pelos ajustes do aparelho, nunca por um link recebido.",
+   "cartilhas": [
+    "celulares",
+    "malware"
+   ],
+   "categoria_oficial": "CTIR Gov — Software Vulnerável (notificação preventiva; não é contagem de incidentes consumados). Fonte: https://www.gov.br/gsi/pt-br/assuntos/ctir/operacoes-e-servicos/ctir-gov-em-numeros",
+   "justificativa": "Acrescenta um comportamento preventivo que a v3 não media, com a pegadinha de atualizar só os apps."
+  }
+ ],
+ "setores": {
+  "Corporativo": [
+   {
+    "id": "C01",
+    "tema": "fornecedor que mudou de banco",
+    "bloco": "pagamentos e fornecedores",
+    "peso": 30,
+    "pergunta": "Chega um e-mail do fornecedor de sempre, com a mesma assinatura e o histórico da conversa: \"Mudamos de banco. O próximo pagamento deve ir para esta nova conta\". É você quem cadastra os pagamentos. O que faz?",
+    "opcoes": [
+     {
+      "texto": "Atualizo: é o mesmo e-mail e a conversa de sempre.",
+      "fator": 0
+     },
+     {
+      "texto": "Respondo o e-mail pedindo que confirmem os novos dados.",
+      "fator": 0.25
+     },
+     {
+      "texto": "Confiro se o CNPJ da nova conta é o do fornecedor.",
+      "fator": 0.5
+     },
+     {
+      "texto": "Ligo para o contato do fornecedor que já estava no cadastro.",
+      "fator": 1
+     }
+    ],
+    "armadilha": "É um golpe comum e caro para empresas: o e-mail do fornecedor é invadido ou imitado, e a conversa real continua. Responder o e-mail é falar com o golpista. Conferir o CNPJ ajuda, mas não basta: o golpista pode usar uma empresa de fachada com nome parecido. Só um contato antigo garante que a mudança é real.",
+    "dica": "Mudança de dados bancários sempre se confirma por um telefone já cadastrado, nunca pelos contatos que vieram na mensagem. Se possível, quem pede a alteração não deve ser quem aprova.",
+    "cartilhas": [
+     "fraudes",
+     "banco",
+     "febraban"
+    ],
+    "categoria_oficial": "CERT.br — Fraude (tentativas de fraude; associação com o cenário). Fonte: https://stats.cert.br/incidentes/",
+    "justificativa": "Mede o golpe do falso fornecedor, risco financeiro típico de empresas que o núcleo não capta por inteiro."
+   },
+   {
+    "id": "C02",
+    "tema": "login falso em e-mail da chefia",
+    "bloco": "mensagens de trabalho",
+    "peso": 20,
+    "pergunta": "Chega um e-mail com o nome da sua chefe: \"Revisa isso antes da reunião, é urgente\". O link abre uma página igualzinha ao login da empresa, pedindo sua senha. O que faz?",
+    "opcoes": [
+     {
+      "texto": "Digito a senha: a página é idêntica à de sempre.",
+      "fator": 0
+     },
+     {
+      "texto": "Respondo o e-mail perguntando se foi ela mesma que mandou.",
+      "fator": 0.25
+     },
+     {
+      "texto": "Entro pelo celular, que é mais protegido que o computador.",
+      "fator": 0
+     },
+     {
+      "texto": "Fecho e procuro o documento direto no sistema da empresa.",
+      "fator": 1
+     }
+    ],
+    "armadilha": "Página de login falsa é cópia perfeita, e o nome do remetente pode ser escolhido livremente. Responder o e-mail é conversar com o golpista. O celular não protege de página falsa; na tela pequena é ainda mais difícil conferir o endereço.",
+    "dica": "Nunca digite sua senha a partir de link de e-mail. Abra o sistema pelo endereço salvo e, na dúvida, confirme com a pessoa pelo chat ou telefone interno.",
+    "cartilhas": [
+     "golpes",
+     "autenticacao"
+    ],
+    "categoria_oficial": "CERT.br — Fraude > Phishing (páginas falsas). Fonte: https://stats.cert.br/incidentes/",
+    "justificativa": "Mede a exposição a páginas falsas de login usando a hierarquia, com a pegadinha de achar que o celular é mais seguro."
+   },
+   {
+    "id": "C03",
+    "tema": "arquivo do trabalho no computador de casa",
+    "bloco": "dispositivos e trabalho remoto",
+    "peso": 20,
+    "pergunta": "Você precisa terminar uma planilha do trabalho em casa e só tem o computador da família. Qual caminho escolhe?",
+    "opcoes": [
+     {
+      "texto": "Mando para o meu e-mail pessoal e apago quando terminar.",
+      "fator": 0
+     },
+     {
+      "texto": "Salvo na minha nuvem pessoal, que tem senha forte e duas etapas.",
+      "fator": 0.25
+     },
+     {
+      "texto": "Abro pelo webmail da empresa e não baixo nada no computador.",
+      "fator": 0.5
+     },
+     {
+      "texto": "Uso o acesso remoto da empresa; se não houver, peço orientação.",
+      "fator": 1
+     }
+    ],
+    "armadilha": "E-mail e nuvem pessoais guardam cópias que você não controla, e \"apagar depois\" raramente apaga tudo (lixeira, versões, backup automático). Mesmo uma conta pessoal bem protegida fica fora das regras e da proteção da empresa. E um computador compartilhado pode ter vírus ou outras pessoas usando.",
+    "dica": "Use os meios de acesso que a empresa oferece. Se não houver, combine com a chefia antes de tirar arquivos do ambiente de trabalho.",
+    "cartilhas": [
+     "trabalho_remoto",
+     "protecao_dados",
+     "privacidade"
+    ],
+    "categoria_oficial": "ANPD — confidencialidade / divulgação ou acesso não autorizado (tipo de impacto potencial; não é categoria estatística). Fonte: https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis",
+    "justificativa": "Mede a saída de informação da empresa para ambientes pessoais, com a pegadinha da nuvem pessoal \"bem protegida\"."
+   },
+   {
+    "id": "C04",
+    "tema": "emprestar login para colega novo",
+    "bloco": "contas e permissões",
+    "peso": 15,
+    "pergunta": "Um colega novo precisa usar o sistema da equipe hoje, mas o acesso dele ainda não saiu. Todo mundo está correndo. O que você faz?",
+    "opcoes": [
+     {
+      "texto": "Passo minha senha no grupo da equipe para ninguém travar.",
+      "fator": 0
+     },
+     {
+      "texto": "Passo só para ele, no privado, e troco a senha amanhã.",
+      "fator": 0.25
+     },
+     {
+      "texto": "Entro com a minha conta e fico do lado enquanto ele usa.",
+      "fator": 0.5
+     },
+     {
+      "texto": "Peço a liberação do acesso dele e não empresto o meu.",
+      "fator": 1
+     }
+    ],
+    "armadilha": "Tudo o que for feito fica registrado no seu nome. No privado ou trocando depois, a senha já saiu do seu controle: pode ser anotada, salva no navegador dele ou vista por outros. Ficar do lado ajuda, mas o registro continua dizendo que foi você.",
+    "dica": "Cada pessoa com o próprio acesso. Em urgência, peça uma liberação temporária ao responsável pelo sistema.",
+    "cartilhas": [
+     "autenticacao",
+     "protecao_dados"
+    ],
+    "categoria_oficial": "CERT.br — Invasão (acesso não autorizado; associação preventiva). Fonte: https://stats.cert.br/incidentes/",
+    "justificativa": "Avalia o uso de identidade individual e a rastreabilidade, com a pegadinha do \"troco a senha amanhã\"."
+   },
+   {
+    "id": "C05",
+    "tema": "aprovar login que você não fez",
+    "bloco": "contas e permissões",
+    "peso": 15,
+    "pergunta": "Às 23h, seu celular mostra várias notificações seguidas: \"Aprovar login na conta da empresa?\". Você não está tentando entrar em nada. O que faz?",
+    "opcoes": [
+     {
+      "texto": "Aprovo uma para parar de apitar; deve ser falha do sistema.",
+      "fator": 0
+     },
+     {
+      "texto": "Ignoro e, se continuar amanhã, eu vejo isso.",
+      "fator": 0.25
+     },
+     {
+      "texto": "Recuso todas e sigo a vida, já que eu recusei.",
+      "fator": 0.5
+     },
+     {
+      "texto": "Recuso, troco a senha e aviso o pessoal de TI.",
+      "fator": 1
+     }
+    ],
+    "armadilha": "Esses pedidos só aparecem quando alguém já tem a sua senha e está tentando entrar. Golpistas mandam vários de propósito, esperando um toque por cansaço ou engano. Recusar impede a entrada agora, mas a senha continua com eles.",
+    "dica": "Nunca aprove um login que você não iniciou. Recuse, troque a senha e avise o TI: isso indica que a sua senha vazou.",
+    "cartilhas": [
+     "autenticacao"
+    ],
+    "categoria_oficial": "CERT.br — Invasão (acesso não autorizado; associação preventiva). Fonte: https://stats.cert.br/incidentes/",
+    "justificativa": "Substitui a pergunta de IA corporativa (já coberta pela N09) por um golpe atual contra contas de empresa: o bombardeio de pedidos de aprovação."
+   }
+  ],
+  "Governamental": [
+   {
+    "id": "G01",
+    "tema": "ofício falso com link para gov.br",
+    "bloco": "comunicações oficiais",
+    "peso": 25,
+    "pergunta": "Chega no e-mail institucional um \"Ofício Circular\" com brasão, número de processo e prazo para hoje: \"atualize seu cadastro no sistema pelo link abaixo, com sua senha gov.br\". O que faz?",
+    "opcoes": [
+     {
+      "texto": "Entro pelo link: tem brasão, processo e chegou no e-mail do órgão.",
+      "fator": 0
+     },
+     {
+      "texto": "Entro se o endereço do link tiver \".gov.br\" no meio.",
+      "fator": 0.25
+     },
+     {
+      "texto": "Respondo o e-mail pedindo que confirmem se é verdadeiro.",
+      "fator": 0.25
+     },
+     {
+      "texto": "Abro o sistema digitando o endereço que já uso.",
+      "fator": 1
+     }
+    ],
+    "armadilha": "Brasão, número de processo e linguagem formal se copiam facilmente, e chegar no e-mail do órgão não significa que veio de dentro. Um endereço como \"gov.br.atualiza-cadastro.com\" tem \".gov.br\" no meio, mas pertence a outro dono: o que vale é o que vem logo antes da primeira barra. Responder o e-mail é falar com o remetente falso.",
+    "dica": "Acesse sistemas públicos digitando o endereço ou usando um favorito salvo. Confira prazos e pedidos no próprio sistema ou com o setor responsável.",
+    "cartilhas": [
+     "golpes",
+     "autenticacao"
+    ],
+    "categoria_oficial": "CTIR Gov — Página Falsa. Fonte: https://www.gov.br/gsi/pt-br/assuntos/ctir/operacoes-e-servicos/ctir-gov-em-numeros",
+    "justificativa": "Mede o uso da aparência de autoridade como falso sinal de confiança, com a pegadinha do \".gov.br no meio\" do endereço."
+   },
+   {
+    "id": "G02",
+    "tema": "levar planilha de cidadãos para casa",
+    "bloco": "dados de cidadãos",
+    "peso": 25,
+    "pergunta": "Faltou terminar a conferência de uma planilha com dados de cidadãos, e o sistema só abre na rede do órgão. O prazo é amanhã. O que você faz?",
+    "opcoes": [
+     {
+      "texto": "Mando a planilha para o meu e-mail pessoal e termino em casa.",
+      "fator": 0
+     },
+     {
+      "texto": "Tiro a coluna de nomes e mando pelo WhatsApp: aí não identifica ninguém.",
+      "fator": 0.25
+     },
+     {
+      "texto": "Salvo num pendrive com senha e apago quando terminar.",
+      "fator": 0.25
+     },
+     {
+      "texto": "Aviso a chefia e termino só pelos meios do órgão.",
+      "fator": 1
+     }
+    ],
+    "armadilha": "CPF, endereço, data de nascimento e outros campos identificam a pessoa mesmo sem o nome. E-mail, WhatsApp e pendrive pessoais criam cópias fora do controle do órgão, que podem vazar ou se perder. Prazo apertado não autoriza tirar dados pessoais de cidadãos do ambiente oficial.",
+    "dica": "Use só os meios autorizados pelo órgão. Se o prazo não fecha, avise a chefia: um atraso é bem menor que um vazamento.",
+    "cartilhas": [
+     "protecao_dados",
+     "privacidade"
+    ],
+    "categoria_oficial": "ANPD — confidencialidade / divulgação ou acesso não autorizado (tipo de impacto potencial; não é categoria estatística). Fonte: https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis",
+    "justificativa": "Mede a proteção de dados de cidadãos sob pressão de prazo, com a pegadinha de \"tirar o nome resolve\"."
+   },
+   {
+    "id": "G03",
+    "tema": "pendrive deixado por colega",
+    "bloco": "arquivos e dispositivos",
+    "peso": 15,
+    "pergunta": "Um servidor de outro setor deixa um pendrive na sua mesa: \"são os arquivos do atendimento de hoje, abre aí\". O que faz?",
+    "opcoes": [
+     {
+      "texto": "Conecto no computador do trabalho: veio de um colega.",
+      "fator": 0
+     },
+     {
+      "texto": "Conecto, mas só abro arquivos com cara de PDF ou planilha.",
+      "fator": 0.25
+     },
+     {
+      "texto": "Abro primeiro em outro computador, para não arriscar o meu.",
+      "fator": 0.25
+     },
+     {
+      "texto": "Peço que ele mande pela pasta compartilhada do órgão.",
+      "fator": 1
+     }
+    ],
+    "armadilha": "O pendrive pode estar infectado sem o colega saber. Um arquivo pode se chamar \"relatorio.pdf\" e ser um programa, e alguns dispositivos agem só de serem conectados. Abrir em outro computador da rede só muda qual máquina é infectada primeiro.",
+    "dica": "Prefira o compartilhamento institucional. Se o pendrive for inevitável, peça à equipe de TI para verificar antes.",
+    "cartilhas": [
+     "malware"
+    ],
+    "categoria_oficial": "CTIR Gov — indicador de código malicioso (orientação de notificação; não é categoria do quadro estatístico). Fonte: https://www.gov.br/gsi/pt-br/assuntos/ctir/operacoes-e-servicos/notificacao-de-incidentes/orientacoes-para-notificacoes-de-incidentes-ciberneticos",
+    "justificativa": "Mede a exposição a arquivos externos por pressão de atendimento, com a pegadinha do arquivo \"com cara de PDF\"."
+   },
+   {
+    "id": "G04",
+    "tema": "emprestar login no atendimento",
+    "bloco": "contas e permissões",
+    "peso": 20,
+    "pergunta": "A fila de atendimento está enorme e o colega ao lado ainda não tem acesso ao sistema. Ele pede: \"deixa eu usar seu login só hoje?\". O que você faz?",
+    "opcoes": [
+     {
+      "texto": "Passo a senha: é só hoje e é para ajudar o cidadão.",
+      "fator": 0
+     },
+     {
+      "texto": "Digito minha senha para ele, sem dizer qual é.",
+      "fator": 0.25
+     },
+     {
+      "texto": "Deixo minha sessão aberta e fico acompanhando as consultas.",
+      "fator": 0.5
+     },
+     {
+      "texto": "Não empresto e peço ao responsável a liberação dele.",
+      "fator": 1
+     }
+    ],
+    "armadilha": "Toda consulta feita fica registrada no seu nome, inclusive acessos indevidos a dados de cidadãos. Digitar a senha você mesmo ou deixar a sessão aberta protege o segredo, mas não a responsabilidade: no registro, foi você.",
+    "dica": "Cada servidor com o próprio acesso. Em urgência, peça ao responsável pelo sistema o procedimento de contingência.",
+    "cartilhas": [
+     "autenticacao",
+     "protecao_dados"
+    ],
+    "categoria_oficial": "ANPD — confidencialidade / divulgação ou acesso não autorizado (tipo de impacto potencial; não é categoria estatística). Fonte: https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis",
+    "justificativa": "Mede o acesso sem identificação individual em sistemas com dados de cidadãos."
+   },
+   {
+    "id": "G05",
+    "tema": "entregar dados de cidadão no balcão",
+    "bloco": "atendimento ao público",
+    "peso": 15,
+    "pergunta": "Uma pessoa chega ao balcão com um papel timbrado e diz ser de outro órgão: precisa do endereço e do telefone de um cidadão \"para uma intimação urgente\". O que faz?",
+    "opcoes": [
+     {
+      "texto": "Passo: está no papel timbrado e é para um órgão público.",
+      "fator": 0
+     },
+     {
+      "texto": "Passo só o telefone, que é um dado mais simples.",
+      "fator": 0.25
+     },
+     {
+      "texto": "Peço o número do processo e passo se ela informar.",
+      "fator": 0.25
+     },
+     {
+      "texto": "Explico que o pedido precisa vir por ofício e registro o contato.",
+      "fator": 1
+     }
+    ],
+    "armadilha": "Papel timbrado e número de processo se falsificam fácil, e dados de cidadãos interessam a golpistas e a quem quer encontrar alguém. Telefone também é dado pessoal e abre espaço para golpes. Pedidos legítimos entre órgãos seguem um trâmite formal.",
+    "dica": "Não entregue dados pessoais de terceiros no balcão ou por telefone. Oriente quem pede a fazer a solicitação formal e informe a chefia.",
+    "cartilhas": [
+     "privacidade",
+     "protecao_dados"
+    ],
+    "categoria_oficial": "ANPD — confidencialidade / divulgação ou acesso não autorizado (tipo de impacto potencial; não é categoria estatística). Fonte: https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis",
+    "justificativa": "Mede a conferência da legitimidade de quem pede dados de terceiros no atendimento presencial."
+   }
+  ],
+  "Pessoal": [
+   {
+    "id": "P01",
+    "tema": "loja online desconhecida com preço baixo",
+    "bloco": "compras e ofertas",
+    "peso": 25,
+    "pergunta": "Você vê numa rede social o anúncio de um tênis com 60% de desconto, numa loja que nunca usou. Para decidir se compra, no que você mais confia?",
+    "opcoes": [
+     {
+      "texto": "No perfil da loja: milhares de seguidores e comentários elogiando.",
+      "fator": 0
+     },
+     {
+      "texto": "No cadeado do site e no visual bem profissional.",
+      "fator": 0.25
+     },
+     {
+      "texto": "No CNPJ que aparece no rodapé, que eu conferi e existe.",
+      "fator": 0.25
+     },
+     {
+      "texto": "Pesquiso a loja fora do anúncio antes de pagar.",
+      "fator": 1
+     }
+    ],
+    "armadilha": "Seguidores e comentários se compram, e perfis falsos copiam lojas reais. Cadeado e site bonito qualquer golpista tem. E um CNPJ existir não prova nada: golpistas usam o CNPJ de empresas reais ou de fachada.",
+    "dica": "Pesquise o nome da loja junto com \"golpe\" ou \"reclamação\", desconfie de preço muito abaixo do normal e prefira pagar com cartão de crédito, que permite contestar.",
+    "cartilhas": [
+     "comercio",
+     "golpes"
+    ],
+    "categoria_oficial": "CERT.br — Fraude > Phishing (páginas falsas). Fonte: https://stats.cert.br/incidentes/",
+    "justificativa": "Mantém o risco de lojas falsas da v3, agora com a pegadinha do CNPJ, que muita gente usa como prova de confiança."
+   },
+   {
+    "id": "P02",
+    "tema": "senhas e documentos no celular",
+    "bloco": "celular e dados",
+    "peso": 20,
+    "pergunta": "No seu celular, onde ficam suas senhas e as fotos dos seus documentos (RG, CNH, cartão)?",
+    "opcoes": [
+     {
+      "texto": "Senhas no bloco de notas e documentos na galeria, com as outras fotos.",
+      "fator": 0
+     },
+     {
+      "texto": "Senhas num print escondido no meio das fotos; ninguém acha.",
+      "fator": 0.25
+     },
+     {
+      "texto": "Senhas num gerenciador; documentos soltos na galeria.",
+      "fator": 0.5
+     },
+     {
+      "texto": "Gerenciador para senhas; documentos em pasta protegida.",
+      "fator": 1
+     }
+    ],
+    "armadilha": "Quem pega seu celular desbloqueado, ou rouba e consegue entrar, olha primeiro as notas e a galeria. O print \"escondido\" aparece em segundos na busca de fotos, que hoje reconhece texto. Documentos na galeria também vão para backups e podem aparecer quando você mostra fotos para alguém.",
+    "dica": "Use um gerenciador de senhas e a pasta protegida do celular, ou os apps oficiais do governo para documentos. Apague o que não precisa mais.",
+    "cartilhas": [
+     "furto",
+     "celulares"
+    ],
+    "categoria_oficial": "ANPD — confidencialidade / divulgação ou acesso não autorizado (tipo de impacto potencial; não é categoria estatística). Fonte: https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis",
+    "justificativa": "Mede a proteção efetiva no aparelho, sem condenar toda foto de documento, e inclui a pegadinha do print \"escondido\"."
+   },
+   {
+    "id": "P03",
+    "tema": "senha do banco igual à do celular",
+    "bloco": "bancos e pagamentos",
+    "peso": 20,
+    "pergunta": "Que senha você usa para entrar no app do banco?",
+    "opcoes": [
+     {
+      "texto": "A mesma do desbloqueio do celular, para não esquecer.",
+      "fator": 0
+     },
+     {
+      "texto": "Uma data importante da família, que só eu sei.",
+      "fator": 0.25
+     },
+     {
+      "texto": "Uma diferente de tudo, mas anotada no bloco de notas do celular.",
+      "fator": 0.25
+     },
+     {
+      "texto": "Uma senha só para o banco, e o celular com bloqueio forte.",
+      "fator": 1
+     }
+    ],
+    "armadilha": "Ladrões costumam ver você digitar o desbloqueio antes de levar o celular. Se a senha do banco é a mesma, ou está nas notas, eles entram no app e fazem Pix. Datas da família estão entre as primeiras tentadas e aparecem nas redes sociais.",
+    "dica": "Use uma senha exclusiva no app do banco e um bloqueio de tela forte. Ative também os limites de Pix no período noturno e a proteção contra furto do celular.",
+    "cartilhas": [
+     "banco",
+     "furto",
+     "febraban"
+    ],
+    "categoria_oficial": "CERT.br — Invasão (acesso não autorizado; associação preventiva). Fonte: https://stats.cert.br/incidentes/",
+    "justificativa": "Mede a proteção do app bancário depois do furto do celular, com duas pegadinhas: a data da família e a senha anotada nas notas."
+   },
+   {
+    "id": "P04",
+    "tema": "stories em tempo real",
+    "bloco": "redes sociais e privacidade",
+    "peso": 15,
+    "pergunta": "Você está curtindo uma viagem ou um show. Como costuma postar?",
+    "opcoes": [
+     {
+      "texto": "Story na hora, com localização, para todo mundo ver.",
+      "fator": 0
+     },
+     {
+      "texto": "Story na hora, mas sem marcar o local.",
+      "fator": 0.25
+     },
+     {
+      "texto": "Story na hora, só para os \"melhores amigos\".",
+      "fator": 0.75
+     },
+     {
+      "texto": "Posto depois que já saí do lugar.",
+      "fator": 1
+     }
+    ],
+    "armadilha": "Postar na hora avisa que você não está em casa e onde está agora. Mesmo sem marcar o local, fachadas, placas e o fundo da foto entregam onde você está. A lista de amigos próximos ajuda, mas cresce sem você perceber, e prints circulam.",
+    "dica": "Poste depois, revise quem vê seu perfil e evite mostrar a rotina (escola dos filhos, horários, casa vazia).",
+    "cartilhas": [
+     "redes_sociais",
+     "privacidade"
+    ],
+    "categoria_oficial": "Sem categoria estatística diretamente equivalente para exposição de rotina nas redes sociais [confirmar no relatório]; referência: CERT.br, https://stats.cert.br/incidentes/",
+    "justificativa": "Mantém um comportamento de privacidade útil para educar, sem fingir que corresponde a uma categoria de incidente notificado."
+   },
+   {
+    "id": "P05",
+    "tema": "renda extra com depósito de ativação",
+    "bloco": "compras e ofertas",
+    "peso": 20,
+    "pergunta": "Um perfil oferece R$ 50 por dia para curtir vídeos e avaliar produtos. Nas primeiras tarefas você recebe o Pix de verdade. Depois, pedem um \"depósito de ativação\" de R$ 200 para liberar tarefas que pagam mais. O que faz?",
+    "opcoes": [
+     {
+      "texto": "Deposito: eles já me pagaram, então é sério.",
+      "fator": 0
+     },
+     {
+      "texto": "Peço prints de gente que sacou e, se mandarem, deposito.",
+      "fator": 0.25
+     },
+     {
+      "texto": "Não deposito, mas continuo nas tarefas grátis.",
+      "fator": 0.5
+     },
+     {
+      "texto": "Saio do grupo e bloqueio o contato.",
+      "fator": 1
+     }
+    ],
+    "armadilha": "Os primeiros pagamentos são a isca: pagam pouco para ganhar sua confiança e depois pedem valores cada vez maiores. Os prints de \"quem sacou\" são montados pelo próprio grupo. Continuar nas tarefas grátis mantém você exposto a novos pedidos, e o Pix que você recebe pode ser dinheiro de outras vítimas.",
+    "dica": "Desconfie de qualquer trabalho que cobre para liberar ganhos. Não envie dinheiro nem documentos, e denuncie o perfil.",
+    "cartilhas": [
+     "fraudes",
+     "golpes"
+    ],
+    "categoria_oficial": "CERT.br — Fraude (tentativas de fraude; associação com o cenário). Fonte: https://stats.cert.br/incidentes/",
+    "justificativa": "Mantém um golpe muito comum no dia a dia, com dinâmica diferente das páginas falsas."
+   }
+  ]
+ },
+ "grupos_area": [
+  {
+   "nome": "Transações e suprimentos",
+   "areas": [
+    "Financeiro / Contabilidade",
+    "Logística / Suprimentos",
+    "Vendas / Comercial"
+   ],
+   "perguntas": [
+    {
+     "id": "A01",
+     "tema": "liberar pedido por comprovante",
+     "bloco": "transações e suprimentos",
+     "peso": 50,
+     "pergunta": "Um cliente manda pelo WhatsApp o comprovante do Pix e pede para liberar o pedido na hora, porque o motoboy já está na porta. O que faz?",
+     "opcoes": [
+      {
+       "texto": "Libero: o comprovante tem valor, horário e até o código da transação.",
+       "fator": 0
+      },
+      {
+       "texto": "Libero se o nome no comprovante for o mesmo do cliente.",
+       "fator": 0.25
+      },
+      {
+       "texto": "Amplio a imagem para ver se não tem sinal de edição.",
+       "fator": 0.25
+      },
+      {
+       "texto": "Só libero depois de ver o dinheiro na conta.",
+       "fator": 1
+      }
+     ],
+     "armadilha": "Comprovantes são editados em apps comuns, e alguns mostram um Pix agendado, que ainda não foi pago. Nome igual e imagem sem marcas de edição não provam nada. A pressa (\"o motoboy está aí\") faz parte do golpe.",
+     "dica": "Confira o crédito no extrato ou no sistema financeiro antes de liberar mercadoria ou serviço.",
+     "cartilhas": [
+      "fraudes",
+      "banco"
+     ],
+     "categoria_oficial": "CERT.br — Fraude (tentativas de fraude; associação com o cenário). Fonte: https://stats.cert.br/incidentes/",
+     "justificativa": "Mede a exposição a comprovantes falsos, diferente da conferência do destinatário da N07."
+    },
+    {
+     "id": "A02",
+     "tema": "planilha que pede para habilitar conteúdo",
+     "bloco": "transações e suprimentos",
+     "peso": 50,
+     "pergunta": "Chega a \"tabela de preços atualizada\" de um fornecedor. Ao abrir, aparece a faixa amarela: \"Habilitar conteúdo para ver os valores\". O que faz?",
+     "opcoes": [
+      {
+       "texto": "Clico em habilitar, senão a planilha não mostra os valores.",
+       "fator": 0
+      },
+      {
+       "texto": "Habilito, porque o e-mail veio do fornecedor de sempre.",
+       "fator": 0.25
+      },
+      {
+       "texto": "Habilito, porque o antivírus não acusou nada no anexo.",
+       "fator": 0.25
+      },
+      {
+       "texto": "Não habilito e confirmo com o fornecedor por telefone.",
+       "fator": 1
+      }
+     ],
+     "armadilha": "Esse aviso libera macros, pequenos programas que podem instalar vírus e roubar senhas. O e-mail do fornecedor pode ter sido invadido, e o antivírus não pega toda macro maliciosa, principalmente as novas.",
+     "dica": "Não habilite macros em arquivos recebidos. Confirme com quem enviou e, na dúvida, peça ao TI para verificar.",
+     "cartilhas": [
+      "malware",
+      "golpes"
+     ],
+     "categoria_oficial": "CERT.br — Fraude > Malware (códigos maliciosos para furtar informações; associação preventiva). Fonte: https://stats.cert.br/incidentes/",
+     "justificativa": "Mede o risco de arquivos maliciosos em rotinas financeiras e comerciais, com a pegadinha do antivírus."
+    }
+   ]
+  },
+  {
+   "nome": "Dados pessoais e atendimento",
+   "areas": [
+    "Recursos Humanos (RH)",
+    "Saúde e Bem-estar",
+    "Educação / Ensino",
+    "Jurídico / Compliance",
+    "Atendimento ao Cliente / Suporte"
+   ],
+   "perguntas": [
+    {
+     "id": "A03",
+     "tema": "print com dados de pessoa no grupo",
+     "bloco": "dados pessoais e atendimento",
+     "peso": 50,
+     "pergunta": "Para tirar uma dúvida rápida, você pensa em mandar no grupo de WhatsApp da equipe um print da tela do sistema com a ficha de um paciente, aluno ou cliente. Como faz?",
+     "opcoes": [
+      {
+       "texto": "Mando o print: o grupo é só da equipe.",
+       "fator": 0
+      },
+      {
+       "texto": "Mando e apago para todos depois que responderem.",
+       "fator": 0.25
+      },
+      {
+       "texto": "Mando, mas risco o nome da pessoa antes.",
+       "fator": 0.25
+      },
+      {
+       "texto": "Descrevo a dúvida sem nenhum dado da pessoa.",
+       "fator": 1
+      }
+     ],
+     "armadilha": "Grupos têm gente que entra e sai, celulares perdidos e backups automáticos: o print sai do seu controle na hora. \"Apagar para todos\" não apaga o que já foi visto, baixado ou salvo. Riscar o nome não basta: data de nascimento, CPF, diagnóstico ou matrícula ainda identificam.",
+     "dica": "Tire dúvidas sem expor dados de terceiros. Se precisar mostrar o caso, use o sistema ou o canal oficial da organização.",
+     "cartilhas": [
+      "protecao_dados",
+      "privacidade"
+     ],
+     "categoria_oficial": "ANPD — confidencialidade / divulgação ou acesso não autorizado (tipo de impacto potencial; não é categoria estatística). Fonte: https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis",
+     "justificativa": "Substitui a pergunta que repetia a G05: mede a exposição de dados de terceiros em grupos de mensagens, comum em saúde, educação, RH e atendimento."
+    },
+    {
+     "id": "A04",
+     "tema": "passar lista de atendidos para parceiro",
+     "bloco": "dados pessoais e atendimento",
+     "peso": 50,
+     "pergunta": "Um parceiro (uma ONG, empresa ou outro setor) pede a lista das pessoas atendidas para convidar todo mundo para um evento bacana. O que você faz?",
+     "opcoes": [
+      {
+       "texto": "Mando a planilha completa: é por uma boa causa.",
+       "fator": 0
+      },
+      {
+       "texto": "Mando sem os CPFs, só nome, telefone e endereço.",
+       "fator": 0.25
+      },
+      {
+       "texto": "Mando só os telefones, sem nome nenhum.",
+       "fator": 0.25
+      },
+      {
+       "texto": "Ofereço mandar o convite eu mesmo para essas pessoas.",
+       "fator": 1
+      }
+     ],
+     "armadilha": "Boa intenção não autoriza repassar os dados de quem confiou o cadastro a você. Telefone e endereço também são dados pessoais e bastam para golpes ou contatos indesejados. Muitas vezes nem é preciso compartilhar: quem tem o cadastro pode mandar o convite.",
+     "dica": "Antes de repassar dados de terceiros, veja se há autorização e necessidade. Quando der, ofereça enviar a comunicação você mesmo.",
+     "cartilhas": [
+      "protecao_dados",
+      "privacidade"
+     ],
+     "categoria_oficial": "ANPD — confidencialidade / divulgação ou acesso não autorizado (tipo de impacto potencial; não é categoria estatística). Fonte: https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis",
+     "justificativa": "Mede a minimização de dados, com uma resposta certa que não depende de \"procedimento\": evitar o compartilhamento."
+    }
+   ]
+  },
+  {
+   "nome": "Tecnologia e acessos",
+   "areas": [
+    "Tecnologia da Informação (TI)"
+   ],
+   "perguntas": [
+    {
+     "id": "A05",
+     "tema": "acesso de administrador às pressas",
+     "bloco": "tecnologia e acessos",
+     "peso": 50,
+     "pergunta": "Às 18h55, alguém da equipe pede acesso de administrador ao servidor para \"corrigir um erro rapidinho antes de ir embora\". É você quem libera acessos. O que faz?",
+     "opcoes": [
+      {
+       "texto": "Passo a senha do administrador, que a equipe toda já conhece.",
+       "fator": 0
+      },
+      {
+       "texto": "Libero acesso total na conta dele e removo amanhã.",
+       "fator": 0.25
+      },
+      {
+       "texto": "Libero acesso total por uma hora, com expiração automática.",
+       "fator": 0.5
+      },
+      {
+       "texto": "Libero só o necessário para essa correção, no nome dele.",
+       "fator": 1
+      }
+     ],
+     "armadilha": "Senha de administrador compartilhada apaga o rastro de quem fez o quê. \"Removo amanhã\" costuma virar nunca, e acesso sobrando é o que um invasor procura. Limitar o tempo ajuda, mas acesso total para uma correção pequena aumenta o estrago de um erro ou de uma conta invadida.",
+     "dica": "Conceda o mínimo necessário, em conta individual, com prazo e registro. Se o pedido chegar por mensagem, confirme por um canal conhecido.",
+     "cartilhas": [
+      "autenticacao",
+      "protecao_dados"
+     ],
+     "categoria_oficial": "CERT.br — Invasão (acesso não autorizado; associação preventiva). Fonte: https://stats.cert.br/incidentes/",
+     "justificativa": "Mede privilégio mínimo e rastreabilidade, com a ordem dos créditos corrigida em relação à proposta anterior."
+    },
+    {
+     "id": "A06",
+     "tema": "chave de api no chat ou no código",
+     "bloco": "tecnologia e acessos",
+     "peso": 50,
+     "pergunta": "Um colega pede a chave da API do sistema para testar uma integração e sugere: \"manda no chat, é mais rápido\". O que faz?",
+     "opcoes": [
+      {
+       "texto": "Mando no chat da empresa: é ambiente interno.",
+       "fator": 0
+      },
+      {
+       "texto": "Mando no chat e apago a mensagem logo depois.",
+       "fator": 0.25
+      },
+      {
+       "texto": "Coloco no código do projeto, num repositório privado.",
+       "fator": 0.25
+      },
+      {
+       "texto": "Compartilho pelo cofre de senhas, com acesso só para ele.",
+       "fator": 1
+      }
+     ],
+     "armadilha": "Uma chave no chat fica em históricos, backups e notificações, e apagar não remove todas as cópias. Repositório privado pode virar público por engano, e chave escrita no código é uma das formas mais comuns de vazamento. A chave dá acesso direto ao sistema, sem senha nem confirmação de uma pessoa.",
+     "dica": "Guarde chaves num cofre de segredos ou em variáveis de ambiente, com acesso mínimo, e troque a chave sempre que ela tiver sido exposta.",
+     "cartilhas": [
+      "autenticacao",
+      "protecao_dados"
+     ],
+     "categoria_oficial": "CERT.br — Invasão (acesso não autorizado; associação preventiva). Fonte: https://stats.cert.br/incidentes/",
+     "justificativa": "Mede a proteção de credenciais técnicas, com a pegadinha do repositório privado."
+    }
+   ]
+  },
+  {
+   "nome": "Decisões e aprovações",
+   "areas": [
+    "Diretoria / Alta Gestão (C-Level)"
+   ],
+   "perguntas": [
+    {
+     "id": "A07",
+     "tema": "videochamada falsa da diretoria",
+     "bloco": "decisões e aprovações",
+     "peso": 50,
+     "pergunta": "Você entra numa videochamada urgente com o presidente da empresa (rosto e voz são dele) pedindo que você autorize hoje uma transferência sigilosa para fechar um negócio. O que faz?",
+     "opcoes": [
+      {
+       "texto": "Autorizo: eu vi e ouvi ele na chamada.",
+       "fator": 0
+      },
+      {
+       "texto": "Peço que ele mande a ordem por escrito, por e-mail.",
+       "fator": 0.25
+      },
+      {
+       "texto": "Faço uma pergunta pessoal para ter certeza de que é ele.",
+       "fator": 0.25
+      },
+      {
+       "texto": "Desligo e ligo para ele no número que já tenho.",
+       "fator": 1
+      }
+     ],
+     "armadilha": "Rosto e voz podem ser imitados em tempo real por IA (deepfake), e há casos conhecidos de empresas que perderam grandes quantias assim. O e-mail pode vir da mesma origem falsa, e respostas pessoais podem ter sido pesquisadas. Sigilo e urgência servem para pular os controles normais.",
+     "dica": "Pedido fora da rotina se confirma por um contato que você já tinha, e a aprovação dupla vale também para a diretoria.",
+     "cartilhas": [
+      "golpes",
+      "fraudes"
+     ],
+     "categoria_oficial": "CERT.br — Fraude (tentativas de fraude; associação com o cenário). Fonte: https://stats.cert.br/incidentes/",
+     "justificativa": "Substitui a pergunta que repetia a N01: mede a vulnerabilidade de decisões de alto impacto a imitações por IA."
+    },
+    {
+     "id": "A08",
+     "tema": "relatório reservado para suposto assessor",
+     "bloco": "decisões e aprovações",
+     "peso": 50,
+     "pergunta": "Alguém liga dizendo ser assessor de um diretor: \"ele precisa do relatório com os salários da equipe em 10 minutos para a reunião, manda no meu e-mail\". O que faz?",
+     "opcoes": [
+      {
+       "texto": "Mando: ele sabe da reunião e cita o diretor pelo nome.",
+       "fator": 0
+      },
+      {
+       "texto": "Mando com senha no arquivo e passo a senha por telefone.",
+       "fator": 0.25
+      },
+      {
+       "texto": "Mando um resumo sem os nomes, só os valores.",
+       "fator": 0.25
+      },
+      {
+       "texto": "Falo direto com o diretor antes de mandar qualquer coisa.",
+       "fator": 1
+      }
+     ],
+     "armadilha": "Saber da reunião e o nome do diretor é informação fácil de conseguir. Pôr senha no arquivo não adianta se você entrega arquivo e senha à pessoa errada. E um resumo sem nomes ainda pode identificar cargos e salários.",
+     "dica": "Confirme pedidos de informação reservada diretamente com quem teria pedido, por um contato que você já tinha.",
+     "cartilhas": [
+      "protecao_dados",
+      "golpes"
+     ],
+     "categoria_oficial": "ANPD — confidencialidade / divulgação ou acesso não autorizado (tipo de impacto potencial; não é categoria estatística). Fonte: https://www.gov.br/anpd/pt-br/canais_atendimento/agente-de-tratamento/comunicado-de-incidente-de-seguranca-cis",
+     "justificativa": "Mede a entrega de dados por apelo hierárquico, com a pegadinha do arquivo com senha."
+    }
+   ]
+  },
+  {
+   "nome": "Operação, projetos e comunicação",
+   "areas": [
+    "Administrativo / Operacional",
+    "Marketing / Comunicação",
+    "Engenharia / Arquitetura",
+    "Segurança (Pública ou Privada)"
+   ],
+   "perguntas": []
+  },
+  {
+   "nome": "Contexto geral",
+   "areas": [
+    "Estudante",
+    "Não se aplica",
+    "Outros"
+   ],
+   "perguntas": []
+  }
+ ]
+}

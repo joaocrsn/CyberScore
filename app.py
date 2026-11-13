@@ -1,6 +1,7 @@
 import hmac
 import importlib
 import io
+import json
 import os
 import random
 import re
@@ -340,13 +341,24 @@ st.markdown(
         .score-den { font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); margin-top: 4px; letter-spacing: 0.08em; }
         .score-info { position: relative; min-width: 0; }
         .score-kicker { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
-        .score-class { font-family: var(--font-display); font-weight: 700; font-size: clamp(20px, 1.75vw, 27px); letter-spacing: -0.02em; line-height: 1.15; margin: 0 0 10px 0;
-            white-space: nowrap; word-break: normal; overflow-wrap: normal; hyphens: none; }
+        .score-class { font-family: var(--font-display); font-weight: 700; font-size: clamp(19px, 1.55vw, 26px); letter-spacing: -0.02em; line-height: 1.15; margin: 0 0 10px 0;
+            word-break: normal; overflow-wrap: normal; hyphens: none; }
         .score-msg { color: var(--muted); font-size: 15px; line-height: 1.5; margin: 0 0 14px 0; }
         .score-meta { display: inline-flex; gap: 8px; flex-wrap: wrap; }
         .tag { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; color: var(--text); background: var(--surface-2); border: 1px solid var(--border-strong); padding: 4px 10px; border-radius: 8px; }
         .section-title { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 600; font-size: 20px !important; letter-spacing: -0.015em; margin: 30px 0 16px 0 !important; padding: 0 !important; color: var(--text); }
+        /* Pode quebrar só depois da barra ("Alerta/" + "Atenção"), nunca no meio da palavra; o Streamlit põe o
+           texto do título num <span> próprio, então a regra precisa valer para ele também */
+        .score-class, .score-class * { white-space: normal !important; word-break: keep-all !important; overflow-wrap: normal !important; hyphens: none !important; }
+        /* A cor vem da variável --glow do cartão: o Streamlit às vezes descarta o style="color" do próprio título */
+        .score-class, .score-class span[data-heading-text] { color: var(--glow) !important; }
         .relatorio-espaco { height: 2px; }
+        .indice-card { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--purple);
+            border-radius: 14px; padding: 16px 20px; margin: 6px 0 14px 0; }
+        .indice-rotulo { font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+        .indice-valor { font-family: var(--font-display); font-weight: 700; font-size: 34px; line-height: 1.2; margin-top: 4px; }
+        .indice-valor span { font-size: 15px; color: var(--muted); margin-left: 3px; }
+        .indice-nota { font-size: 13px; color: var(--muted); margin-top: 2px; }
         [data-testid="stExpander"] { margin-bottom: 4px; }
         .section-title::before { content: ""; width: 4px; height: 20px; border-radius: 2px; background: linear-gradient(180deg, #8B5CF6, #22D3EE); }
         .bloco-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px 20px; }
@@ -522,14 +534,9 @@ AREAS = [
 ]
 
 
-# Versão 3: 15 situações do dia a dia focadas em "falsa sensação de segurança", só de prevenção
-# (a reação a incidentes fica no módulo de Consultoria). 5 blocos de 3 perguntas.
-# Cada pergunta tem um peso (soma = 1000) e cada opção um fator de 0 a 1.
-# Pontos da opção = peso × fator. Peso reflete impacto × frequência do golpe.
-# "cartilhas" usa as chaves do dicionário CARTILHAS, definido mais abaixo.
-VERSAO_QUESTIONARIO = 3
-
-PERGUNTAS = [
+# Questionário versão 3 (15 perguntas iguais para todos). Fica no código só para o Painel de
+# Administração conseguir ler e exportar os diagnósticos antigos, que usam "indice_pergunta".
+PERGUNTAS_V3 = [
     # ---------- Bloco 1: Golpes por mensagem e ligação (250) ----------
     {
         "tema": "repassar código recebido por SMS",
@@ -755,8 +762,47 @@ PERGUNTAS = [
 ]
 
 
-PONTUACAO_MAXIMA = sum(p["peso"] for p in PERGUNTAS)
-BLOCOS = list(dict.fromkeys(p["bloco"] for p in PERGUNTAS))
+# ---------- Questionário versão 4: núcleo comum + módulo do setor + extras de área ----------
+# As perguntas ficam em questionario_v4.json (texto, peso, alternativas com fator de 0 a 1, armadilha,
+# dica, cartilhas e categoria oficial). Pontos da alternativa = peso × fator.
+# - Núcleo (todos respondem): pesos somam 1000 e formam o CyberScore.
+# - Módulo do setor (Corporativo, Governamental ou Pessoal): pesos somam 100 = índice setorial.
+# - Extras de área (só Corporativo/Governamental, em alguns grupos de áreas): pesos somam 100 = índice de área.
+# Os índices nunca entram no CyberScore, para a nota continuar comparável entre todos os grupos.
+VERSAO_QUESTIONARIO = 4
+with open(Path(__file__).resolve().parent / "questionario_v4.json", encoding="utf-8") as _arquivo:
+    QUESTIONARIO = json.load(_arquivo)
+
+
+def _preparar(pergunta, parte, nome_parte):
+    pergunta = dict(pergunta)
+    pergunta["opcoes"] = [(o["texto"], o["fator"]) for o in pergunta["opcoes"]]
+    pergunta["parte"], pergunta["nome_parte"] = parte, nome_parte
+    pergunta["bloco"] = pergunta["bloco"][:1].upper() + pergunta["bloco"][1:]  # "contas e acessos" → "Contas e acessos"
+    return pergunta
+
+
+NUCLEO = [_preparar(p, "nucleo", "CyberScore") for p in QUESTIONARIO["nucleo"]]
+MODULOS_SETOR = {s: [_preparar(p, "setor", s) for p in ps] for s, ps in QUESTIONARIO["setores"].items()}
+GRUPOS_AREA = [{"nome": g["nome"], "areas": g["areas"],
+                "perguntas": [_preparar(p, "area", g["nome"]) for p in g["perguntas"]]}
+               for g in QUESTIONARIO["grupos_area"]]
+GRUPO_DA_AREA = {area: g for g in GRUPOS_AREA for area in g["areas"]}
+SETORES_COM_EXTRAS_DE_AREA = {"Corporativo", "Governamental"}
+PERGUNTAS_V4 = {p["id"]: p for p in NUCLEO + [p for ps in MODULOS_SETOR.values() for p in ps]
+                + [p for g in GRUPOS_AREA for p in g["perguntas"]]}
+ORDEM_PARTES = {"nucleo": 0, "setor": 1, "area": 2}
+
+PONTUACAO_MAXIMA = sum(p["peso"] for p in NUCLEO)
+BLOCOS = list(dict.fromkeys(p["bloco"] for p in NUCLEO))
+
+
+def perguntas_do_perfil(setor, area):
+    """Ids das perguntas que cada perfil responde, na ordem: núcleo, setor, área."""
+    lista = list(NUCLEO) + MODULOS_SETOR.get(setor, [])
+    if setor in SETORES_COM_EXTRAS_DE_AREA and area in GRUPO_DA_AREA:
+        lista += GRUPO_DA_AREA[area]["perguntas"]
+    return [p["id"] for p in lista]
 
 
 # ============================================================
@@ -782,6 +828,7 @@ CARTILHAS = {
     "protecao_dados": ("Proteção de Dados", "CERT.br", _CERT.format("protecao-de-dados")),
     "redes_sociais": ("Redes Sociais", "CERT.br", _CERT.format("redes-sociais")),
     "vazamento": ("Vazamento de Dados", "CERT.br", _CERT.format("vazamento-de-dados")),
+    "trabalho_remoto": ("Trabalho Remoto", "CERT.br", _CERT.format("trabalho-remoto")),
     "celular_seguro": ("Celular Seguro: bloqueio de aparelho roubado", "Governo Federal", "https://celularseguro.mj.gov.br"),
     "febraban": ("Portal Antifraudes", "Febraban", "https://antifraudes.febraban.org.br"),
     "hibp": ("Have I Been Pwned: seu e-mail vazou?", "Ferramenta gratuita", "https://haveibeenpwned.com"),
@@ -877,7 +924,7 @@ def exibir_cartilhas(chaves):
 VALORES_INICIAIS = {
     "perfil_concluido": False, "setor_usuario": "", "area_usuario": "",
     "etapa_diagnostico": 0, "diagnostico_finalizado": False,
-    "respostas_diagnostico": [], "ordem_opcoes": [], "resultado_salvo": False,
+    "respostas_diagnostico": [], "ordem_opcoes": [], "perguntas_sessao": [], "resultado_salvo": False,
     "analise_ia_realizada": False, "dicas_diagnostico_ia": "",
     "guardar_historico": False, "codigo_recem_criado": False,
 }
@@ -905,20 +952,38 @@ for chave, valor in VALORES_DA_VISITA.items():
     st.session_state.setdefault(chave, valor)
 
 
-def sortear_ordem_opcoes():
+def sortear_ordem_opcoes(ids):
     """Embaralha as alternativas uma vez por auditoria, para a 'certa' não ficar sempre na mesma letra."""
-    return [random.sample(range(len(p["opcoes"])), len(p["opcoes"])) for p in PERGUNTAS]
+    return [random.sample(range(len(PERGUNTAS_V4[i]["opcoes"])), len(PERGUNTAS_V4[i]["opcoes"])) for i in ids]
+
+
+def respostas_da_parte(respostas, parte):
+    return [r for r in respostas if r.get("id") in PERGUNTAS_V4 and PERGUNTAS_V4[r["id"]]["parte"] == parte]
 
 
 def calcular_score(respostas):
-    return round(sum(r["pontos"] for r in respostas) / PONTUACAO_MAXIMA * 1000)
+    """CyberScore (0 a 1000): só as perguntas do núcleo, iguais para todos."""
+    return round(sum(r["pontos"] for r in respostas_da_parte(respostas, "nucleo")) / PONTUACAO_MAXIMA * 1000)
+
+
+def calcular_indices(respostas):
+    """Índices de 0 a 100 do módulo do setor e dos extras de área (quando a pessoa respondeu)."""
+    indices = {}
+    for parte in ("setor", "area"):
+        da_parte = respostas_da_parte(respostas, parte)
+        if da_parte:
+            maximo = sum(PERGUNTAS_V4[r["id"]]["peso"] for r in da_parte)
+            indices[parte] = (PERGUNTAS_V4[da_parte[0]["id"]]["nome_parte"],
+                              round(sum(r["pontos"] for r in da_parte) / maximo * 100))
+    return indices
 
 
 def score_por_bloco(respostas):
+    """Desempenho em cada bloco temático do núcleo (0 a 1)."""
     obtido = {b: 0 for b in BLOCOS}
-    for r in respostas:
-        obtido[PERGUNTAS[r["indice_pergunta"]]["bloco"]] += r["pontos"]
-    maximo = {b: sum(p["peso"] for p in PERGUNTAS if p["bloco"] == b) for b in BLOCOS}
+    for r in respostas_da_parte(respostas, "nucleo"):
+        obtido[PERGUNTAS_V4[r["id"]]["bloco"]] += r["pontos"]
+    maximo = {b: sum(p["peso"] for p in NUCLEO if p["bloco"] == b) for b in BLOCOS}
     return {b: obtido[b] / maximo[b] for b in BLOCOS}
 
 
@@ -978,15 +1043,16 @@ def gerar_dicas_diagnostico(score_final, temas_vulneraveis):
 
 
 def respostas_com_falha():
-    """Respostas que não tiraram nota máxima, das que mais custaram pontos para as que menos custaram."""
-    falhas = [r for r in st.session_state.respostas_diagnostico if r["fator"] < 1]
-    return sorted(falhas, key=lambda r: PERGUNTAS[r["indice_pergunta"]]["peso"] - r["pontos"], reverse=True)
+    """Respostas sem nota máxima: primeiro as do núcleo, depois setor e área; em cada parte, as que mais custaram."""
+    falhas = [r for r in st.session_state.respostas_diagnostico if r["fator"] < 1 and r.get("id") in PERGUNTAS_V4]
+    return sorted(falhas, key=lambda r: (ORDEM_PARTES[PERGUNTAS_V4[r["id"]]["parte"]],
+                                         -(PERGUNTAS_V4[r["id"]]["peso"] - r["pontos"])))
 
 
 def exibir_analise_ia_do_diagnostico(score):
     if not st.session_state.analise_ia_realizada:
         st.session_state.analise_ia_realizada = True
-        temas = [PERGUNTAS[r["indice_pergunta"]]["tema"] for r in respostas_com_falha()]
+        temas = [PERGUNTAS_V4[r["id"]]["tema"] for r in respostas_com_falha()]
         if temas and obter_cliente_ia():
             with st.spinner("Montando seu plano de ação..."):
                 st.session_state.dicas_diagnostico_ia = gerar_dicas_diagnostico(score, temas)
@@ -998,32 +1064,36 @@ def exibir_analise_ia_do_diagnostico(score):
 
 def explicar_calculo(respostas=None):
     """Explica a fórmula do CyberScore. Com respostas, mostra também os pontos da própria pessoa."""
-    exemplo = PERGUNTAS[0]
+    exemplo = PERGUNTAS_V4["N02"]
     texto_ex, fator_ex = exemplo["opcoes"][1]
-    pesos = [p["peso"] for p in PERGUNTAS]
+    pesos = [p["peso"] for p in NUCLEO]
     col_texto, col_tabela = st.columns([1.1, 1], gap="medium")
     col_texto.markdown(
-        f"**1. Cada situação vale pontos conforme o risco.** As {len(PERGUNTAS)} situações somam "
-        f"**{PONTUACAO_MAXIMA} pontos**. Golpes mais comuns e que causam mais prejuízo valem mais "
+        f"**1. Cada situação vale pontos conforme o risco.** As {len(NUCLEO)} situações que todo mundo responde "
+        f"somam **{PONTUACAO_MAXIMA} pontos**. Golpes mais comuns e que causam mais prejuízo valem mais "
         f"(de {min(pesos)} a {max(pesos)} pontos cada).\n\n"
         "**2. Cada resposta vale uma parte desses pontos.** A atitude mais segura vale **100%**; atitudes "
-        "parcialmente seguras valem **75%, 50% ou 25%**; a atitude de risco vale **0%**.\n\n"
-        f"**3. O CyberScore é a soma de tudo**, numa escala de 0 a 1000: "
+        "parcialmente seguras valem **75% ou 50%**; as \"pegadinhas\", que parecem seguras mas não são, valem "
+        "**25% ou nada**; e a atitude de risco vale **0%**.\n\n"
+        f"**3. O CyberScore é a soma dessas {len(NUCLEO)} situações**, numa escala de 0 a 1000: "
         f"*CyberScore = soma dos pontos ÷ {PONTUACAO_MAXIMA} × 1000*.\n\n"
         f"**Exemplo:** a situação do código recebido por SMS vale {exemplo['peso']} pontos. Quem responde "
-        f"“{texto_ex}” ganha {fator_ex:.0%} deles, ou seja, {round(exemplo['peso'] * fator_ex)} pontos."
+        f"“{texto_ex}” ganha {fator_ex:.0%} deles, ou seja, {round(exemplo['peso'] * fator_ex)} pontos.\n\n"
+        "**4. Perguntas do seu setor e da sua área.** Quem informa o setor responde mais 5 situações típicas "
+        "dele, e algumas áreas têm 2 situações extras. Elas geram **índices de 0 a 100** separados, que não "
+        "entram no CyberScore: assim a nota continua comparável entre todas as pessoas."
     )
     obtidos = {b: 0 for b in BLOCOS}
-    for r in respostas or []:
-        obtidos[PERGUNTAS[r["indice_pergunta"]]["bloco"]] += r["pontos"]
+    for r in respostas_da_parte(respostas or [], "nucleo"):
+        obtidos[PERGUNTAS_V4[r["id"]]["bloco"]] += r["pontos"]
     linhas = []
     for b in BLOCOS:
-        do_bloco = [p for p in PERGUNTAS if p["bloco"] == b]
+        do_bloco = [p for p in NUCLEO if p["bloco"] == b]
         linha = {"Área": b, "Situações": len(do_bloco), "Pontos possíveis": sum(p["peso"] for p in do_bloco)}
         if respostas:
             linha["Seus pontos"] = obtidos[b]
         linhas.append(linha)
-    total = {"Área": "Total", "Situações": len(PERGUNTAS), "Pontos possíveis": PONTUACAO_MAXIMA}
+    total = {"Área": "Total", "Situações": len(NUCLEO), "Pontos possíveis": PONTUACAO_MAXIMA}
     if respostas:
         total["Seus pontos"] = sum(obtidos.values())
     # Tabela HTML simples (em vez de grade interativa): legível por leitores de tela e fácil de imprimir
@@ -1052,9 +1122,10 @@ def exibir_armadilhas():
         st.success("Você não caiu em nenhuma das armadilhas. Mande o teste para alguém da família!")
         return
     for r in falhas:
-        p = PERGUNTAS[r["indice_pergunta"]]
+        p = PERGUNTAS_V4[r["id"]]
         perdidos = p["peso"] - r["pontos"]
-        with st.expander(f"{p['tema'][0].upper()}{p['tema'][1:]}  ·  −{perdidos} pts"):
+        onde = "" if p["parte"] == "nucleo" else f" no índice {p['nome_parte']}"
+        with st.expander(f"{p['tema'][0].upper()}{p['tema'][1:]}  ·  −{perdidos} pts{onde}"):
             st.markdown(f"**Você respondeu:** {p['opcoes'][r['opcao']][0]}")
             st.markdown(f"**Por que é arriscado:** {p['armadilha']}")
             st.markdown(f"**O que fazer:** {p['dica']}")
@@ -1128,16 +1199,19 @@ def pagina_diagnostico():
     if not st.session_state.perfil_concluido:
         cabecalho_pagina(
             "Diagnóstico de Segurança Digital",
-            f"São {len(PERGUNTAS)} situações do dia a dia, cerca de 4 minutos. "
+            "De 11 a 18 situações do dia a dia, conforme o seu perfil: cerca de 5 minutos. "
             "Responda o que você realmente faz, não o que acha que é o certo.",
         )
         st.info("Você não precisa se identificar: não pedimos nome, e-mail, CPF nem telefone.", icon="🔒")
 
         col_perfil, col_resultado = st.columns(2, gap="medium")
         with col_perfil, st.container(key="card_perfil"):
-            cabecalho_cartao("1", "Seu perfil", "Ajuda a comparar resultados por grupo na pesquisa.", selo="opcional")
+            cabecalho_cartao("1", "Seu perfil", "Com o setor, você recebe situações típicas do seu dia a dia.", selo="opcional")
             setor = st.selectbox("Setor de atuação", options=SETORES, index=None, key="setor_box", placeholder="Prefiro não informar")
             area = st.selectbox("Área", options=AREAS, index=None, key="area_box", placeholder="Prefiro não informar")
+            quantidade = len(perguntas_do_perfil(setor, area))
+            extra = "" if setor else " Informe o setor para receber também as perguntas dele."
+            st.caption(f"Com esse perfil, você vai responder **{quantidade} situações**.{extra}")
 
         codigo_atual = st.session_state.codigo_usuario
         opcao_historico = (
@@ -1170,10 +1244,17 @@ def pagina_diagnostico():
             if guardar and not codigo_atual:
                 st.session_state.codigo_usuario = gerar_codigo()
                 st.session_state.codigo_recem_criado = True
-            st.session_state.ordem_opcoes = sortear_ordem_opcoes()
+            st.session_state.perguntas_sessao = perguntas_do_perfil(setor, area)
+            st.session_state.ordem_opcoes = sortear_ordem_opcoes(st.session_state.perguntas_sessao)
             st.session_state.perfil_concluido = True
             st.rerun()
         return
+
+    # Sessão aberta antes da atualização para a v4 (respostas no formato antigo): recomeça do zero
+    sessao_antiga = any("id" not in r for r in st.session_state.respostas_diagnostico)
+    if not st.session_state.perguntas_sessao or sessao_antiga:
+        reiniciar_sessao()
+        st.rerun()
 
 
     if st.session_state.diagnostico_finalizado:
@@ -1211,6 +1292,7 @@ def pagina_diagnostico():
         with col_blocos:
             st.markdown('<h2 class="section-title" style="margin-top:0 !important">Desempenho por área</h2>', unsafe_allow_html=True)
             painel_blocos(respostas)
+        exibir_indices(calcular_indices(respostas))
         with st.expander(f"Como o seu CyberScore de {score_1000} foi calculado"):
             explicar_calculo(respostas)
         st.markdown('<div class="relatorio-espaco"></div>', unsafe_allow_html=True)
@@ -1231,14 +1313,26 @@ def pagina_diagnostico():
 
 
     etapa = st.session_state.etapa_diagnostico
-    total_perguntas = len(PERGUNTAS)
-    pergunta = PERGUNTAS[etapa]
-    if not st.session_state.ordem_opcoes:  # sessão aberta antes de o código mudar
-        st.session_state.ordem_opcoes = sortear_ordem_opcoes()
-
-
+    ids = st.session_state.perguntas_sessao
+    pergunta = PERGUNTAS_V4[ids[etapa]]
     with st.container(key="coluna_leitura"):
-        exibir_pergunta(etapa, pergunta, total_perguntas)
+        exibir_pergunta(etapa, pergunta, len(ids))
+
+
+def exibir_indices(indices):
+    """Cartões dos índices do setor e da área (0 a 100), separados do CyberScore."""
+    if not indices:
+        return
+    nomes = {"setor": "Índice do setor", "area": "Índice da área"}
+    colunas = st.columns(len(indices), gap="medium")
+    for coluna, (parte, (nome, valor)) in zip(colunas, indices.items()):
+        cor = classificar_score_semantico(valor * 10)[2]
+        coluna.markdown(
+            f'<div class="indice-card" style="border-left-color:{cor}"><div class="indice-rotulo">{nomes[parte]} · '
+            f'{escape(nome)}</div><div class="indice-valor" style="color:{cor}">{valor}<span>/100</span></div>'
+            '<div class="indice-nota">Situações específicas do seu perfil. Não entra no CyberScore.</div></div>',
+            unsafe_allow_html=True,
+        )
 
 
 def exibir_pergunta(etapa, pergunta, total_perguntas):
@@ -1255,7 +1349,7 @@ def exibir_pergunta(etapa, pergunta, total_perguntas):
     st.markdown(
         html(f"""
         <div class="q-card">
-            <div class="q-chip">{escape(pergunta['bloco'])}</div>
+            <div class="q-chip">{escape(pergunta['bloco'] if pergunta['parte'] == 'nucleo' else pergunta['nome_parte'] + ' · ' + pergunta['bloco'])}</div>
             <h2 class="q-text">{escape(pergunta['pergunta'])}</h2>
         </div>
         """),
@@ -1266,9 +1360,9 @@ def exibir_pergunta(etapa, pergunta, total_perguntas):
     # Cartões de resposta na ordem sorteada para esta auditoria
     for letra, i in zip("ABCD", st.session_state.ordem_opcoes[etapa]):
         texto, fator = pergunta["opcoes"][i]
-        if st.button(f"{letra}   ·   {texto}", use_container_width=True, key=f"btn_{etapa}_{i}"):
+        if st.button(f"{letra}   ·   {texto}", use_container_width=True, key=f"btn_{pergunta['id']}_{i}"):
             st.session_state.respostas_diagnostico.append(
-                {"indice_pergunta": etapa, "opcao": i, "fator": fator, "pontos": round(pergunta["peso"] * fator)}
+                {"id": pergunta["id"], "opcao": i, "fator": fator, "pontos": round(pergunta["peso"] * fator)}
             )
 
             if etapa == total_perguntas - 1:
@@ -1448,6 +1542,9 @@ def pagina_historico():
         titulo_secao("Evolução")
         evolucao = pd.DataFrame({"Data": [h["criado_em"] for h in historico], "CyberScore": [h["score"] for h in historico]})
         st.line_chart(evolucao, x="Data", y="CyberScore", color=COR_CIANO)
+        if len({h["versao"] for h in historico}) > 1:
+            st.caption("Algumas avaliações foram feitas com uma versão anterior do questionário, com outras "
+                       "perguntas: compare a evolução com cuidado.")
 
     titulo_secao("Suas avaliações")
     for h in historico:
@@ -1459,6 +1556,9 @@ def pagina_historico():
             if h["versao"] == VERSAO_QUESTIONARIO:
                 for bloco, proporcao in score_por_bloco(h["respostas"]).items():
                     st.markdown(f"- {bloco}: **{proporcao * 100:.0f}%**")
+                for parte, (nome, valor) in calcular_indices(h["respostas"]).items():
+                    rotulo = "Índice do setor" if parte == "setor" else "Índice da área"
+                    st.markdown(f"- {rotulo} ({nome}): **{valor}/100**")
             else:
                 st.caption("Feita com uma versão anterior do questionário: só o total está disponível.")
             if st.button("Apagar esta avaliação", key=f"apagar_{h['id']}"):
@@ -1494,7 +1594,7 @@ def dialogo_legal():
 
 
 RECURSOS = [
-    ("🛡️", "Diagnóstico de Risco", "15 situações do dia a dia mostram onde você está exposto a golpes."),
+    ("🛡️", "Diagnóstico de Risco", "Situações do dia a dia, adaptadas ao seu setor, mostram onde você está exposto a golpes."),
     ("🚨", "Consultoria de Incidentes", "Caiu num golpe? Passo a passo e cartilhas oficiais para agir rápido."),
     ("📈", "Meu Histórico", "Com um código anônimo, acompanhe sua evolução ao refazer o teste."),
 ]
@@ -1552,12 +1652,29 @@ ESCALA_PERCENTUAL = alt.Scale(type="threshold", domain=[40, 70], range=[cor for 
 COLUNAS_RESUMO = ["Participante", "Data e hora", "Setor", "Área", "CyberScore", "Classificação", "Histórico"]
 
 
+COLUNAS_INDICES = ["Índice do setor", "Grupo de área", "Índice da área"]
+
+
+def categoria_curta(texto):
+    """Resume a categoria oficial da pergunta (ex.: "CERT.br — Fraude > Phishing") para os gráficos."""
+    curta = texto.split(" Fonte:")[0].split(" (")[0].split(" /")[0].split(";")[0].strip().rstrip(".")
+    if curta.startswith("Sem categoria"):
+        return "Sem categoria oficial"
+    fonte, _, nome = curta.partition(" — ")
+    return f"{fonte} — {nome[:1].upper()}{nome[1:]}" if nome else curta
+
+
 def tabela_registros(registros, versao):
-    """Uma linha por diagnóstico: perfil, nota, desempenho por bloco e a resposta de cada pergunta."""
-    linhas = []
+    """Devolve (uma linha por diagnóstico, uma linha por resposta).
+
+    A primeira traz perfil, nota, índices, desempenho por bloco e a resposta de cada pergunta (a tabela única
+    da exportação). A segunda, com a categoria oficial de cada pergunta, alimenta o gráfico por categoria.
+    """
+    linhas, longas = [], []
     for n, r in enumerate((r for r in registros if r["versao"] == versao), start=1):
+        participante = f"Participante {n}"
         linha = {
-            "Participante": f"Participante {n}",
+            "Participante": participante,
             "Data e hora": r["criado_em"].replace(tzinfo=None),  # já no horário de Brasília
             "Setor": r["setor"] or "Não informado",
             "Área": r["area"] or "Não informado",
@@ -1566,16 +1683,58 @@ def tabela_registros(registros, versao):
             "Histórico": r["historico"] or "—",
             "Versão": r["versao"],
         }
-        if versao == VERSAO_QUESTIONARIO and r["respostas"]:
-            for bloco, proporcao in score_por_bloco(r["respostas"]).items():
-                linha[f"% {bloco}"] = round(proporcao * 100)
-            por_pergunta = {x["indice_pergunta"]: x for x in r["respostas"]}
-            for i, p in enumerate(PERGUNTAS):
-                x = por_pergunta.get(i)
+        respostas = r["respostas"] or []
+        if versao == VERSAO_QUESTIONARIO:
+            indices = calcular_indices(respostas)
+            linha["Índice do setor"] = indices["setor"][1] if "setor" in indices else None
+            linha["Grupo de área"] = indices["area"][0] if "area" in indices else "—"
+            linha["Índice da área"] = indices["area"][1] if "area" in indices else None
+            if respostas:
+                for bloco, proporcao in score_por_bloco(respostas).items():
+                    linha[f"% {bloco}"] = round(proporcao * 100)
+            por_id = {x.get("id"): x for x in respostas}
+            for pid, p in PERGUNTAS_V4.items():
+                x = por_id.get(pid)
+                linha[f"{pid} {p['tema']}"] = p["opcoes"][x["opcao"]][0] if x else ""
+                linha[f"{pid} pontos"] = x["pontos"] if x else None
+                if x:
+                    longas.append({"Participante": participante, "Setor": linha["Setor"], "Área": linha["Área"],
+                                   "Pergunta": pid, "Tema": p["tema"], "Parte": p["nome_parte"],
+                                   "Categoria oficial": categoria_curta(p["categoria_oficial"]), "Fator": x["fator"]})
+        elif versao == 3:
+            por_indice = {x.get("indice_pergunta"): x for x in respostas}
+            for i, p in enumerate(PERGUNTAS_V3):
+                x = por_indice.get(i)
                 linha[f"P{i + 1:02d} {p['tema']}"] = p["opcoes"][x["opcao"]][0] if x else ""
                 linha[f"P{i + 1:02d} pontos"] = x["pontos"] if x else None
         linhas.append(linha)
-    return pd.DataFrame(linhas)
+    return pd.DataFrame(linhas), pd.DataFrame(longas)
+
+
+def tabela_categorias(longas):
+    """Por categoria oficial: % de respostas abaixo da atitude mais segura (crédito menor que 100%)."""
+    if longas.empty:
+        return pd.DataFrame(columns=["Categoria oficial", "Respostas", "Abaixo do seguro (%)", "Crédito médio (%)"])
+    tabela = longas.groupby("Categoria oficial")["Fator"].agg(
+        Respostas="count", abaixo=lambda f: (f < 1).mean() * 100, credito=lambda f: f.mean() * 100).reset_index()
+    tabela = tabela.rename(columns={"abaixo": "Abaixo do seguro (%)", "credito": "Crédito médio (%)"})
+    return tabela.round({"Abaixo do seguro (%)": 0, "Crédito médio (%)": 0}).sort_values("Abaixo do seguro (%)", ascending=False)
+
+
+def tabela_indices(df):
+    """Média dos índices específicos (0 a 100) por setor e por grupo de área."""
+    partes = []
+    if "Índice do setor" in df:
+        s = df.dropna(subset=["Índice do setor"]).groupby("Setor")["Índice do setor"].agg(["count", "mean"]).reset_index()
+        partes.append(pd.DataFrame({"Módulo": "Setor: " + s["Setor"], "Participantes": s["count"], "Média": s["mean"]}))
+    if "Índice da área" in df:
+        a = df.dropna(subset=["Índice da área"]).groupby("Grupo de área")["Índice da área"].agg(["count", "mean"]).reset_index()
+        partes.append(pd.DataFrame({"Módulo": "Área: " + a["Grupo de área"], "Participantes": a["count"], "Média": a["mean"]}))
+    if not partes:
+        return pd.DataFrame(columns=["Módulo", "Participantes", "Média"])
+    tabela = pd.concat(partes, ignore_index=True)
+    tabela["Média"] = tabela["Média"].round(0)
+    return tabela.sort_values("Média")
 
 
 def media_por(df, coluna):
@@ -1616,7 +1775,7 @@ def grafico_grupos(tabela, coluna, titulo, largura="container"):
     base = alt.Chart(tabela).encode(
         y=alt.Y(f"{coluna}:N", sort="-x", title=None),
         # Domínio além de 1000 deixa espaço para o rótulo à direita da barra; o eixo mostra só até 1000
-        x=alt.X("Média:Q", scale=alt.Scale(domain=[0, 1250]), title="Média do CyberScore",
+        x=alt.X("Média:Q", scale=alt.Scale(domain=[0, 1400]), title="Média do CyberScore",
                 axis=alt.Axis(values=[0, 250, 500, 750, 1000], format="d")),
     )
     barras = base.mark_bar(cornerRadiusEnd=6).encode(
@@ -1670,11 +1829,46 @@ def grafico_por_dia(df, largura="container"):
     ).properties(title="Diagnósticos por dia", height=230, width=largura)
 
 
-def arquivo_excel(df, setor, area, blocos, faixas, resumo):
+def grafico_categorias(tabela, largura="container"):
+    altura = max(160, 40 * len(tabela))
+    base = alt.Chart(tabela).encode(
+        y=alt.Y("Categoria oficial:N", sort="-x", title=None),
+        x=alt.X("Abaixo do seguro (%):Q", scale=alt.Scale(domain=[0, 150]), title="Abaixo da atitude segura (%)",
+                axis=alt.Axis(values=[0, 25, 50, 75, 100], format="d")),
+    )
+    # Aqui, mais alto é pior: a escala de cores é invertida em relação às notas
+    escala = alt.Scale(type="threshold", domain=[30, 60], range=["#10B981", "#F59E0B", "#EF4444"])
+    barras = base.mark_bar(cornerRadiusEnd=6).encode(
+        color=alt.Color("Abaixo do seguro (%):Q", scale=escala, legend=None),
+        tooltip=["Categoria oficial:N", "Respostas:Q", "Abaixo do seguro (%):Q", "Crédito médio (%):Q"])
+    rotulos = base.transform_calculate(
+        rotulo="format(datum['Abaixo do seguro (%)'], '.0f') + '%  ·  ' + datum['Respostas'] + ' resp.'"
+    ).mark_text(align="left", dx=8, color="#ECECF1", font="Inter", fontSize=12).encode(text="rotulo:N")
+    return (barras + rotulos).properties(title="Práticas de risco por categoria oficial",
+                                         height=altura, width=largura)
+
+
+def grafico_indices(tabela, largura="container"):
+    altura = max(150, 42 * len(tabela))
+    base = alt.Chart(tabela).encode(
+        y=alt.Y("Módulo:N", sort="x", title=None),
+        x=alt.X("Média:Q", scale=alt.Scale(domain=[0, 165]), title="Índice médio (0 a 100)",
+                axis=alt.Axis(values=[0, 25, 50, 75, 100], format="d")),
+    )
+    barras = base.mark_bar(cornerRadiusEnd=6).encode(
+        color=alt.Color("Média:Q", scale=ESCALA_PERCENTUAL, legend=None), tooltip=["Módulo:N", "Participantes:Q", "Média:Q"])
+    rotulos = base.transform_calculate(
+        rotulo="format(datum['Média'], '.0f') + '   ·   ' + datum['Participantes'] + ' part.'"
+    ).mark_text(align="left", dx=8, color="#ECECF1", font="Inter", fontSize=12).encode(text="rotulo:N")
+    return (barras + rotulos).properties(title="Índices específicos de setor e área", height=altura, width=largura)
+
+
+def arquivo_excel(df, setor, area, blocos, faixas, resumo, categorias, indices):
     buffer = io.BytesIO()
     with pd.ExcelWriter(buffer, engine="openpyxl") as planilha:
         for nome, tabela in [("Resumo", resumo), ("Registros", df), ("Média por setor", setor), ("Média por área", area),
-                             ("Média por tema", blocos), ("Faixas de resultado", faixas)]:
+                             ("Média por tema", blocos), ("Faixas de resultado", faixas),
+                             ("Por categoria oficial", categorias), ("Índices específicos", indices)]:
             tabela.to_excel(planilha, sheet_name=nome, index=False)
             aba = planilha.sheets[nome]
             for i, coluna in enumerate(tabela.columns, start=1):
@@ -1684,13 +1878,19 @@ def arquivo_excel(df, setor, area, blocos, faixas, resumo):
     return buffer.getvalue()
 
 
-def arquivo_dashboard_html(df, setor, area, blocos, faixas, carimbo):
+def arquivo_dashboard_html(df, setor, area, blocos, faixas, categorias, indices, carimbo):
     largura = 430
-    painel = alt.vconcat(
+    linhas = [
         alt.hconcat(grafico_grupos(setor, "Setor", "Média por setor", largura),
                     grafico_grupos(area, "Área", "Média por área", largura)),
         alt.hconcat(grafico_faixas(faixas, largura), grafico_blocos(blocos, largura)),
         alt.hconcat(grafico_distribuicao(df, largura), grafico_por_dia(df, largura)),
+    ]
+    extras = [g(t, largura) for g, t in ((grafico_categorias, categorias), (grafico_indices, indices)) if not t.empty]
+    if extras:
+        linhas.append(alt.hconcat(*extras))
+    painel = alt.vconcat(
+        *linhas,
         spacing=36,
     ).properties(title=f"CyberScore · Painel da pesquisa · {len(df)} registros · gerado em {carimbo}")
     return tema_grafico(painel, exportar=True).to_html()
@@ -1754,7 +1954,7 @@ def pagina_admin():
         "Versão do questionário", versoes, index=versoes.index(VERSAO_QUESTIONARIO) if VERSAO_QUESTIONARIO in versoes else 0,
         help="Versões diferentes têm perguntas diferentes, por isso não são misturadas.",
     )
-    df = tabela_registros(registros, versao)
+    df, longas = tabela_registros(registros, versao)
     filtro_setor = col_setor.multiselect("Filtrar por setor", sorted(df["Setor"].unique()), placeholder="Todos os setores")
     filtro_area = col_area.multiselect("Filtrar por área", sorted(df["Área"].unique()), placeholder="Todas as áreas")
     if filtro_setor:
@@ -1764,9 +1964,12 @@ def pagina_admin():
     if df.empty:
         st.info("Nenhum registro com esses filtros.")
         return
+    if not longas.empty:
+        longas = longas[longas["Participante"].isin(df["Participante"])]
 
     setor, area = media_por(df, "Setor"), media_por(df, "Área")
     blocos, faixas = media_por_bloco(df), contagem_faixas(df)
+    categorias, indices = tabela_categorias(longas), tabela_indices(df)
     pessoas_historico = df.loc[df["Histórico"] != "—", "Histórico"].nunique()
     k1, k2, k3, k4 = st.columns(4)
     k1.metric("Registros", len(df))
@@ -1783,8 +1986,9 @@ def pagina_admin():
             "(H1, H2…) para quem guardou histórico: a mesma pessoa pode aparecer em mais de uma linha. "
             "Nenhuma informação que identifique alguém é coletada."
         )
-        detalhado = st.toggle("Mostrar o desempenho por tema e a resposta de cada pergunta")
-        colunas = list(df.columns) if detalhado else [c for c in COLUNAS_RESUMO if c in df.columns]
+        detalhado = st.toggle("Mostrar índices, desempenho por tema e a resposta de cada pergunta")
+        resumo_colunas = COLUNAS_RESUMO + (COLUNAS_INDICES if versao == VERSAO_QUESTIONARIO else [])
+        colunas = list(df.columns) if detalhado else [c for c in resumo_colunas if c in df.columns]
         st.dataframe(
             df[colunas], hide_index=True, use_container_width=True, height=min(560, 38 * (len(df) + 1) + 4),
             column_config={
@@ -1799,16 +2003,30 @@ def pagina_admin():
             (grafico_faixas(faixas), grafico_blocos(blocos)),
             (grafico_distribuicao(df), grafico_por_dia(df)),
         ]
+        extras = [g(t) for g, t in ((grafico_categorias, categorias), (grafico_indices, indices)) if not t.empty]
+        if extras:
+            graficos.append(tuple(extras) if len(extras) == 2 else (extras[0], None))
         for linha, (esquerda, direita) in enumerate(graficos):
             col_esq, col_dir = st.columns(2, gap="medium")
             for coluna, grafico, lado in ((col_esq, esquerda, "e"), (col_dir, direita, "d")):
+                if grafico is None:
+                    continue
                 with coluna, st.container(key=f"card_grafico_{linha}{lado}"):
                     st.altair_chart(tema_grafico(grafico), use_container_width=True, theme=None)
+        if not categorias.empty:
+            st.caption(
+                "Categorias oficiais: cada pergunta está ligada a um tipo de incidente do CERT.br, do CTIR Gov ou a um "
+                "impacto previsto pela ANPD. O gráfico mostra comportamento declarado, não incidentes reais: serve para "
+                "comparar tendências com os relatórios oficiais, não números absolutos."
+            )
         with st.expander("Ver os números dos gráficos em tabela"):  # alternativa acessível aos gráficos
             t1, t2, t3 = st.columns(3)
             t1.dataframe(setor, hide_index=True, use_container_width=True)
             t2.dataframe(area, hide_index=True, use_container_width=True)
             t3.dataframe(blocos, hide_index=True, use_container_width=True)
+            t4, t5 = st.columns(2)
+            t4.dataframe(categorias, hide_index=True, use_container_width=True)
+            t5.dataframe(indices, hide_index=True, use_container_width=True)
 
     with aba_exportar:
         carimbo = pd.Timestamp.now(tz="America/Sao_Paulo").strftime("%d/%m/%Y %H:%M")
@@ -1828,8 +2046,8 @@ def pagina_admin():
         )
         e1, e2, e3 = st.columns(3, gap="medium")
         with e1, st.container(key="card_exp_excel"):
-            cabecalho_cartao("1", "Planilha completa", "Excel com abas: resumo, registros, médias por setor, área e tema, e faixas.")
-            st.download_button("Baixar Excel (.xlsx)", arquivo_excel(df, setor, area, blocos, faixas, resumo),
+            cabecalho_cartao("1", "Planilha completa", "Excel com abas: resumo, registros, médias, faixas, categorias oficiais e índices.")
+            st.download_button("Baixar Excel (.xlsx)", arquivo_excel(df, setor, area, blocos, faixas, resumo, categorias, indices),
                                file_name=f"{nome}.xlsx", use_container_width=True,
                                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         with e2, st.container(key="card_exp_csv"):
@@ -1838,7 +2056,7 @@ def pagina_admin():
                                .encode("utf-8-sig"), file_name=f"{nome}.csv", mime="text/csv", use_container_width=True)
         with e3, st.container(key="card_exp_html"):
             cabecalho_cartao("3", "Dashboard para apresentar", "Página com todos os gráficos, que abre em qualquer navegador.")
-            st.download_button("Baixar dashboard (.html)", arquivo_dashboard_html(df, setor, area, blocos, faixas, carimbo),
+            st.download_button("Baixar dashboard (.html)", arquivo_dashboard_html(df, setor, area, blocos, faixas, categorias, indices, carimbo),
                                file_name=f"{nome}_dashboard.html", mime="text/html", use_container_width=True)
         st.caption("Cada gráfico da aba Dashboards também pode ser salvo como imagem pelo menu ⋯ que aparece ao passar o mouse.")
 

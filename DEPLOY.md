@@ -81,6 +81,9 @@ As tabelas são criadas sozinhas na primeira vez que o app abrir.
 Para atualizar o app depois: envie o arquivo alterado para o GitHub (*Add file → Upload files*).
 O Streamlit Cloud atualiza sozinho em ~1 minuto.
 
+> **Atenção:** a partir da versão 4 do questionário, as perguntas ficam no arquivo `questionario_v4.json`.
+> Ele precisa estar no GitHub junto com o `app.py`; sem ele, o app não abre.
+
 ---
 
 ## 5. Domínio próprio (quando quiser)
